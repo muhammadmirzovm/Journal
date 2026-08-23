@@ -228,7 +228,8 @@
   "tg_nudge": {
     "title": "Telegramni ulang",
     "desc": "Parolni tiklash uchun Telegram hisobingizni ulang.",
-    "cta": "Hozir ulash"
+    "cta": "Hozir ulash",
+    "fail": "Ulash havolasini yaratib bo'lmadi."
   },
   "telegram": {
     "section_title": "Telegram",

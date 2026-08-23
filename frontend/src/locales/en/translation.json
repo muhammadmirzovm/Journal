@@ -228,7 +228,8 @@
   "tg_nudge": {
     "title": "Connect your Telegram",
     "desc": "Link your Telegram account to enable password reset via OTP.",
-    "cta": "Connect now"
+    "cta": "Connect now",
+    "fail": "Failed to generate the connect link."
   },
   "telegram": {
     "section_title": "Telegram",

@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import { Users, BookOpen, Plus, LogIn, ArrowRight, GraduationCap, X, Loader2, Trophy, Star, MessageCircle, BookMarked, ClipboardList, ScanLine, PiggyBank } from 'lucide-react'
 import { getGroups, joinGroup, getAcademyAnnouncements, createAcademyAnnouncement, deleteAnnouncement } from '../api/groups'
-import { getAdminStats } from '../api/users'
+import { getAdminStats, connectTelegram } from '../api/users'
 import { AnnouncementsSection } from '../components/AnnouncementCard'
 import DashboardLeaderboard from '../components/DashboardLeaderboard'
 import AdminCharts from '../components/charts/AdminCharts'
@@ -57,6 +57,17 @@ export default function Dashboard() {
   const dismissNudge = () => {
     localStorage.setItem('tg_nudge_dismissed', '1')
     setNudgeDismissed(true)
+  }
+
+  const [tgConnecting, setTgConnecting] = useState(false)
+  const handleNudgeConnect = async () => {
+    setTgConnecting(true)
+    try {
+      const { data } = await connectTelegram()
+      window.open(data.link, '_blank', 'noopener,noreferrer')
+    } catch (err) {
+      show(err.response?.data?.detail || t('tg_nudge.fail'), 'error')
+    } finally { setTgConnecting(false) }
   }
 
   useEffect(() => {
@@ -145,14 +156,17 @@ export default function Dashboard() {
                   {t('tg_nudge.desc')}
                 </span>
               </div>
-              <Link to={`/profile/${user?.id}`} style={{
-                fontSize: 13, fontWeight: 700, color: '#fff', textDecoration: 'none',
+              <button onClick={handleNudgeConnect} disabled={tgConnecting} style={{
+                display: 'inline-flex', alignItems: 'center', gap: 6,
+                fontSize: 13, fontWeight: 700, color: '#fff', border: 'none',
                 background: 'linear-gradient(135deg, #14B8A8, #0D9488)',
                 padding: '6px 14px', borderRadius: 8, flexShrink: 0,
                 boxShadow: '0 4px 12px rgba(20,184,168,0.3)',
+                cursor: tgConnecting ? 'not-allowed' : 'pointer', opacity: tgConnecting ? 0.7 : 1,
               }}>
+                {tgConnecting && <Loader2 size={13} style={{ animation: 'spin 0.7s linear infinite' }} />}
                 {t('tg_nudge.cta')}
-              </Link>
+              </button>
               <button onClick={dismissNudge} style={{
                 background: 'none', border: 'none', cursor: 'pointer',
                 color: 'var(--text-muted)', padding: 4, display: 'flex', flexShrink: 0,
