@@ -49,15 +49,7 @@ export default function Dashboard() {
   const [announcements, setAnnouncements] = useState([])
   const [annLoading,    setAnnLoading]    = useState(true)
 
-  const [nudgeDismissed, setNudgeDismissed] = useState(
-    () => localStorage.getItem('tg_nudge_dismissed') === '1'
-  )
-  const showNudge = !nudgeDismissed && user && !user.telegram_id
-
-  const dismissNudge = () => {
-    localStorage.setItem('tg_nudge_dismissed', '1')
-    setNudgeDismissed(true)
-  }
+  const showNudge = user && !user.telegram_id
 
   const [tgConnecting, setTgConnecting] = useState(false)
   const handleNudgeConnect = async () => {
@@ -166,12 +158,6 @@ export default function Dashboard() {
               }}>
                 {tgConnecting && <Loader2 size={13} style={{ animation: 'spin 0.7s linear infinite' }} />}
                 {t('tg_nudge.cta')}
-              </button>
-              <button onClick={dismissNudge} style={{
-                background: 'none', border: 'none', cursor: 'pointer',
-                color: 'var(--text-muted)', padding: 4, display: 'flex', flexShrink: 0,
-              }}>
-                <X size={16} />
               </button>
             </div>
           </motion.div>
