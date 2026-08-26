@@ -204,6 +204,14 @@ export default function GroupDetail() {
 
   useEffect(() => { load() }, [id])
 
+  useEffect(() => {
+    if (new URLSearchParams(location.search).get('newLesson') === '1') {
+      setShowAddLesson(true)
+      navigate(`/groups/${id}`, { replace: true })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   const copy = () => { navigator.clipboard.writeText(group.join_key); setCopied(true); setTimeout(() => setCopied(false), 2000) }
 
   const handleDeleteGroup = async () => {
