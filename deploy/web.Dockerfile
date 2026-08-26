@@ -1,5 +1,6 @@
-# AcademyJournal frontend (Vite/React build) served by nginx, which also
-# reverse-proxies /api, /admin, /static to the backend and serves /media.
+# AcademyJournal frontend (Vite/React build) served by Caddy, which also
+# terminates TLS (automatic Let's Encrypt) and reverse-proxies the API host
+# to the backend container.
 # Build context = repo root.
 
 # ---- stage 1: build the SPA ----
@@ -8,14 +9,12 @@ WORKDIR /app
 COPY frontend/package.json frontend/package-lock.json ./
 RUN npm ci
 COPY frontend/ ./
-# Production frontend calls the backend on its dedicated subdomain.
-# Overridable at build time: --build-arg VITE_API_URL=...
-ARG VITE_API_URL=https://api.journal.crmneo.com/api
+ARG VITE_API_URL
 RUN sed -i "s#^VITE_API_URL=.*#VITE_API_URL=${VITE_API_URL}#" .env.production \
     || echo "VITE_API_URL=${VITE_API_URL}" >> .env.production
 RUN npm run build
 
 # ---- stage 2: serve ----
-FROM nginx:1.27-alpine
-COPY deploy/nginx.conf /etc/nginx/conf.d/default.conf
-COPY --from=build /app/dist /usr/share/nginx/html
+FROM caddy:2-alpine
+COPY deploy/Caddyfile /etc/caddy/Caddyfile
+COPY --from=build /app/dist /srv

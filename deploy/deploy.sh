@@ -4,7 +4,7 @@
 # the untracked .env on the server and are preserved (git never touches it).
 set -euo pipefail
 
-APP_DIR="/home/academy/AcademyJournal"
+APP_DIR="/home/ubuntu/Journal"
 cd "$APP_DIR"
 
 echo "==> Fetch & hard-checkout origin/main"

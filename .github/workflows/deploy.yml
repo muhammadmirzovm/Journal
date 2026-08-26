@@ -64,5 +64,5 @@ jobs:
           script_stop: true
           command_timeout: 20m
           script: |
-            cd /home/academy/AcademyJournal
+            cd /home/ubuntu/Journal
             bash deploy/deploy.sh

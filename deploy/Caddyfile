@@ -1,0 +1,38 @@
+# AcademyJournal reverse proxy / TLS termination (Caddy).
+# Caddy obtains and renews Let's Encrypt certificates automatically for both
+# hostnames — no host nginx, no certbot needed.
+
+{$FRONTEND_DOMAIN} {
+	encode gzip
+
+	handle /media/* {
+		root * /media
+		uri strip_prefix /media
+		file_server
+		header Cache-Control "public, max-age=604800"
+	}
+
+	handle {
+		root * /srv
+		try_files {path} /index.html
+		file_server
+	}
+}
+
+{$API_DOMAIN} {
+	encode gzip
+	request_body {
+		max_size 25MB
+	}
+
+	handle /media/* {
+		root * /media
+		uri strip_prefix /media
+		file_server
+		header Cache-Control "public, max-age=604800"
+	}
+
+	handle {
+		reverse_proxy backend:8000
+	}
+}
