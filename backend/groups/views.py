@@ -11,9 +11,9 @@ import io
 import openpyxl
 from openpyxl.styles import Font, PatternFill, Alignment
 from openpyxl.utils import get_column_letter
-from .models import Group, GroupMembership, Lesson, Attendance, Score, Journal, HomeworkSubmission, Announcement, Exam, ExamResult
+from .models import Group, GroupMembership, Lesson, GroupDayOff, Attendance, Score, Journal, HomeworkSubmission, Announcement, Exam, ExamResult
 from .serializers import (
-    GroupSerializer, MemberSerializer, LessonSerializer,
+    GroupSerializer, MemberSerializer, LessonSerializer, GroupDayOffSerializer,
     AttendanceSerializer, BulkAttendanceSerializer,
     ScoreSerializer, BulkScoreSerializer, JournalSerializer,
     HomeworkSubmissionSerializer, AnnouncementSerializer,
@@ -194,6 +194,33 @@ class LessonListCreateView(generics.ListCreateAPIView):
         for membership in group.memberships.filter(student__is_active=True):
             if membership.joined_at.date() <= lesson.date:
                 Attendance.objects.get_or_create(lesson=lesson, student=membership.student, defaults={'present': False})
+
+
+class GroupDayOffListCreateView(generics.ListCreateAPIView):
+    """Mirrors the Telegram bot's /nolesson flow — lets the web app mark a
+    group as having no class on a given date (teacher sick, holiday, etc.)."""
+    serializer_class = GroupDayOffSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get_queryset(self):
+        qs = GroupDayOff.objects.filter(group_id=self.kwargs['group_pk'])
+        target_date = self.request.query_params.get('date')
+        if target_date:
+            qs = qs.filter(date=target_date)
+        return qs
+
+    def create(self, request, *args, **kwargs):
+        group = get_object_or_404(Group, pk=self.kwargs['group_pk'])
+        if group.teacher != request.user and request.user.role != 'admin':
+            return Response({'detail': 'Only the teacher or admin can mark a day off.'}, status=403)
+        target_date = request.data.get('date') or timezone.localdate().isoformat()
+        reason = request.data.get('reason') or GroupDayOff.OTHER
+        obj, created = GroupDayOff.objects.get_or_create(
+            group=group, date=target_date,
+            defaults={'reason': reason, 'created_by': request.user},
+        )
+        data = self.get_serializer(obj).data
+        return Response(data, status=status.HTTP_201_CREATED if created else status.HTTP_200_OK)
 
 
 class LessonDetailView(generics.RetrieveUpdateDestroyAPIView):

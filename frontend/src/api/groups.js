@@ -33,6 +33,9 @@ export const setHomeworkAssignment = (gid, lid, assignment) => api.post(`/groups
 
 export const endLesson              = (gid, lid)           => api.post(`/groups/${gid}/lessons/${lid}/end/`)
 
+export const getDayOff              = (gid, date)          => api.get(`/groups/${gid}/day-off/?date=${date}`)
+export const markDayOff             = (gid, date, reason)  => api.post(`/groups/${gid}/day-off/`, { date, reason })
+
 export const getAcademyAnnouncements    = ()          => api.get('/announcements/')
 export const createAcademyAnnouncement  = (data)      => api.post('/announcements/', data)
 export const deleteAnnouncement         = (id)        => api.delete(`/announcements/${id}/`)

@@ -1,7 +1,7 @@
 from django.urls import path
 from .views import (
     GroupListCreateView, GroupDetailView, JoinGroupView, GroupMembersView,
-    LessonListCreateView, LessonDetailView,
+    LessonListCreateView, LessonDetailView, GroupDayOffListCreateView,
     AttendanceView, ScoreView, JournalView, HomeworkView,
     MembershipDetailView, EndLessonView,
     AcademyAnnouncementView, GroupAnnouncementView, AnnouncementDeleteView,
@@ -17,6 +17,7 @@ urlpatterns = [
     path('groups/<int:pk>/members/add/',                                        AddMemberDirectView.as_view(),  name='group_member_add'),
     path('groups/<int:pk>/members/<int:member_pk>/',                            MembershipDetailView.as_view(), name='membership_detail'),
     path('groups/<int:group_pk>/lessons/',                                      LessonListCreateView.as_view(), name='lesson_list'),
+    path('groups/<int:group_pk>/day-off/',                                      GroupDayOffListCreateView.as_view(), name='group_day_off'),
     path('groups/<int:group_pk>/lessons/<int:pk>/',                             LessonDetailView.as_view(),     name='lesson_detail'),
     path('groups/<int:group_pk>/lessons/<int:lesson_pk>/attendance/',           AttendanceView.as_view(),       name='attendance'),
     path('groups/<int:group_pk>/lessons/<int:lesson_pk>/scores/',               ScoreView.as_view(),            name='scores'),

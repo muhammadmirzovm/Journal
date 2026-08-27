@@ -2,7 +2,7 @@ import pytest
 from django.contrib.auth import get_user_model
 from rest_framework.test import APIClient
 from academies.models import Academy
-from groups.models import Group, Lesson, Attendance
+from groups.models import Group, Lesson, Attendance, GroupDayOff
 
 User = get_user_model()
 
@@ -150,6 +150,60 @@ def test_daily_report_skips_day_off_groups(academy, teacher, monkeypatch):
     assert len(reminder_texts) == 1
     assert 'Forgot' in reminder_texts[0]
     assert 'DayOff' not in reminder_texts[0]
+
+
+# ── Day off (mirrors the Telegram bot's /nolesson flow) ─────────────────────
+
+@pytest.mark.django_db
+def test_mark_day_off(teacher_client, group):
+    res = teacher_client.post(f'/api/groups/{group.id}/day-off/', {
+        'date': '2026-05-25', 'reason': 'sick',
+    })
+    assert res.status_code == 201
+    assert GroupDayOff.objects.filter(group=group, date='2026-05-25', reason='sick').exists()
+
+
+@pytest.mark.django_db
+def test_mark_day_off_is_idempotent(teacher_client, group, teacher):
+    GroupDayOff.objects.create(group=group, date='2026-05-25', reason='sick', created_by=teacher)
+    res = teacher_client.post(f'/api/groups/{group.id}/day-off/', {
+        'date': '2026-05-25', 'reason': 'holiday',
+    })
+    assert res.status_code == 200
+    assert GroupDayOff.objects.filter(group=group, date='2026-05-25').count() == 1
+    # Existing reason is preserved — only the first call sets it.
+    assert GroupDayOff.objects.get(group=group, date='2026-05-25').reason == 'sick'
+
+
+@pytest.mark.django_db
+def test_mark_day_off_defaults_to_today(teacher_client, group):
+    from django.utils import timezone
+    res = teacher_client.post(f'/api/groups/{group.id}/day-off/', {'reason': 'other'})
+    assert res.status_code == 201
+    assert GroupDayOff.objects.filter(group=group, date=timezone.localdate()).exists()
+
+
+@pytest.mark.django_db
+def test_mark_day_off_rejects_other_teacher(academy, group, student):
+    other_teacher = User.objects.create_user(
+        username='teacher2', password='pass1234', role='teacher', academy=academy,
+    )
+    client = APIClient()
+    res = client.post('/api/auth/login/', {'username': 'teacher2', 'password': 'pass1234'})
+    client.credentials(HTTP_AUTHORIZATION=f'Bearer {res.data["access"]}')
+    res = client.post(f'/api/groups/{group.id}/day-off/', {'date': '2026-05-25', 'reason': 'sick'})
+    assert res.status_code == 403
+    assert not GroupDayOff.objects.filter(group=group).exists()
+
+
+@pytest.mark.django_db
+def test_list_day_off_filtered_by_date(teacher_client, group, teacher):
+    GroupDayOff.objects.create(group=group, date='2026-05-25', reason='sick', created_by=teacher)
+    GroupDayOff.objects.create(group=group, date='2026-05-26', reason='holiday', created_by=teacher)
+    res = teacher_client.get(f'/api/groups/{group.id}/day-off/', {'date': '2026-05-25'})
+    assert res.status_code == 200
+    assert len(res.data) == 1
+    assert res.data[0]['date'] == '2026-05-25'
 
 
 @pytest.mark.django_db

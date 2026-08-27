@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
-import { Users, BookOpen, Plus, LogIn, ArrowRight, GraduationCap, X, Loader2, Trophy, Star, MessageCircle, BookMarked, ClipboardList, ScanLine, PiggyBank, Calendar, Clock, CheckCircle2, AlertCircle } from 'lucide-react'
-import { getGroups, joinGroup, getAcademyAnnouncements, createAcademyAnnouncement, deleteAnnouncement, getLessons } from '../api/groups'
+import { Users, BookOpen, Plus, LogIn, ArrowRight, GraduationCap, X, Loader2, Trophy, Star, MessageCircle, BookMarked, ClipboardList, ScanLine, PiggyBank, Calendar, Clock, CheckCircle2, AlertCircle, CalendarX2, Ban } from 'lucide-react'
+import { getGroups, joinGroup, getAcademyAnnouncements, createAcademyAnnouncement, deleteAnnouncement, getLessons, getDayOff, markDayOff } from '../api/groups'
 import { getAdminStats, connectTelegram } from '../api/users'
 import { AnnouncementsSection } from '../components/AnnouncementCard'
 import DashboardLeaderboard from '../components/DashboardLeaderboard'
@@ -46,7 +46,10 @@ export default function Dashboard() {
   const todayGroups = groups.filter(g => !g.is_graduated && (g.class_days || []).includes(todayDow))
 
   const [todayLessons, setTodayLessons] = useState({}) // { [groupId]: lesson | null }
+  const [todayDayOffs, setTodayDayOffs] = useState({}) // { [groupId]: dayOff | null }
   const [todayLessonsLoading, setTodayLessonsLoading] = useState(true)
+  const [dayOffPickerFor, setDayOffPickerFor] = useState(null)
+  const [markingDayOff, setMarkingDayOff] = useState(false)
 
   useEffect(() => {
     const dow = (new Date().getDay() + 6) % 7
@@ -55,13 +58,30 @@ export default function Dashboard() {
     const todayStr = new Date().toISOString().slice(0, 10)
     setTodayLessonsLoading(true)
     Promise.all(groupsToday.map(g =>
-      getLessons(g.id, 1).then(r => {
-        const found = r.data.results.find(l => l.date === todayStr)
-        return [g.id, found || null]
+      Promise.all([getLessons(g.id, 1), getDayOff(g.id, todayStr)]).then(([lr, dr]) => {
+        const foundLesson = lr.data.results.find(l => l.date === todayStr)
+        return [g.id, foundLesson || null, dr.data[0] || null]
       })
-    )).then(entries => setTodayLessons(Object.fromEntries(entries)))
-      .finally(() => setTodayLessonsLoading(false))
+    )).then(entries => {
+      setTodayLessons(Object.fromEntries(entries.map(([id, lesson]) => [id, lesson])))
+      setTodayDayOffs(Object.fromEntries(entries.map(([id, , dayOff]) => [id, dayOff])))
+    }).finally(() => setTodayLessonsLoading(false))
   }, [groups, role])
+
+  const REASONS = ['sick', 'holiday', 'other']
+
+  const handleMarkDayOff = async (groupId, reason) => {
+    const todayStr = new Date().toISOString().slice(0, 10)
+    setMarkingDayOff(true)
+    try {
+      const { data } = await markDayOff(groupId, todayStr, reason)
+      setTodayDayOffs(prev => ({ ...prev, [groupId]: data }))
+      setDayOffPickerFor(null)
+      show(t('dashboard.day_off_marked'), 'success')
+    } catch {
+      show(t('dashboard.day_off_fail'), 'error')
+    } finally { setMarkingDayOff(false) }
+  }
 
   // class_time is "HH:MM-HH:MM" — true once today's start time has passed.
   const isClassOverdue = classTime => {
@@ -222,11 +242,13 @@ export default function Dashboard() {
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 14 }}>
               {todayGroups.map((g, i) => {
                 const lesson = todayLessons[g.id]
-                const overdue = !lesson && isClassOverdue(g.class_time)
-                const accent = lesson ? (lesson.ended_at ? '#22C55E' : '#F59E0B') : (overdue ? '#EF4444' : 'var(--accent)')
+                const dayOff = todayDayOffs[g.id]
+                const overdue = !lesson && !dayOff && isClassOverdue(g.class_time)
+                const accent = dayOff ? 'var(--text-muted)' : lesson ? (lesson.ended_at ? '#22C55E' : '#F59E0B') : (overdue ? '#EF4444' : 'var(--accent)')
+                const pickerOpen = dayOffPickerFor === g.id
                 return (
                   <motion.div key={g.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.06 }}
-                    style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 10, overflow: 'hidden', boxShadow: 'var(--shadow-sm)' }}>
+                    style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 10, overflow: 'hidden', boxShadow: 'var(--shadow-sm)', opacity: dayOff ? 0.75 : 1 }}>
                     <div style={{ height: 4, background: accent }} />
                     <div style={{ padding: '16px 18px' }}>
                       <Link to={`/groups/${g.id}`} style={{ fontWeight: 700, fontSize: 14, textDecoration: 'none', color: 'var(--text)', display: 'block', marginBottom: 6 }}>{g.name}</Link>
@@ -237,6 +259,10 @@ export default function Dashboard() {
                       )}
                       {todayLessonsLoading ? (
                         <div style={{ height: 32, borderRadius: 8, background: 'var(--bg)' }} />
+                      ) : dayOff ? (
+                        <p style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 12, fontWeight: 700, color: 'var(--text-muted)' }}>
+                          <CalendarX2 size={13} /> {t('dashboard.no_lesson_today')} — {t(`dashboard.reason_${dayOff.reason}`)}
+                        </p>
                       ) : lesson ? (
                         <>
                           <p style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 12, fontWeight: 700, color: accent, marginBottom: 8 }}>
@@ -246,6 +272,19 @@ export default function Dashboard() {
                             {t('dashboard.open_lesson_btn')}
                           </Link>
                         </>
+                      ) : pickerOpen ? (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                          {REASONS.map(r => (
+                            <button key={r} onClick={() => handleMarkDayOff(g.id, r)} disabled={markingDayOff}
+                              style={{ ...secondaryBtn, fontSize: 12, padding: '6px 12px', width: '100%', justifyContent: 'flex-start', boxSizing: 'border-box', opacity: markingDayOff ? 0.6 : 1 }}>
+                              {t(`dashboard.reason_${r}`)}
+                            </button>
+                          ))}
+                          <button onClick={() => setDayOffPickerFor(null)} disabled={markingDayOff}
+                            style={{ background: 'none', border: 'none', color: 'var(--text-muted)', fontSize: 11, cursor: 'pointer', padding: '2px 0' }}>
+                            {t('group_detail.cancel')}
+                          </button>
+                        </div>
                       ) : (
                         <>
                           {overdue && (
@@ -256,6 +295,10 @@ export default function Dashboard() {
                           <Link to={`/groups/${g.id}?newLesson=1`} style={{ ...primaryBtn, fontSize: 12, padding: '7px 14px', width: '100%', justifyContent: 'center', background: overdue ? '#EF4444' : primaryBtn.background }}>
                             <Plus size={13} /> {t('dashboard.create_lesson_btn')}
                           </Link>
+                          <button onClick={() => setDayOffPickerFor(g.id)}
+                            style={{ display: 'flex', alignItems: 'center', gap: 4, background: 'none', border: 'none', color: 'var(--text-muted)', fontSize: 11, fontWeight: 600, cursor: 'pointer', padding: '8px 0 0', width: '100%' }}>
+                            <Ban size={11} /> {t('dashboard.mark_no_lesson')}
+                          </button>
                         </>
                       )}
                     </div>

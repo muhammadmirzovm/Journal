@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Group, GroupMembership, Lesson, Attendance, Score, Journal, HomeworkSubmission, Announcement, Exam, ExamResult
+from .models import Group, GroupMembership, Lesson, GroupDayOff, Attendance, Score, Journal, HomeworkSubmission, Announcement, Exam, ExamResult
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
@@ -68,6 +68,13 @@ class LessonSerializer(serializers.ModelSerializer):
         model  = Lesson
         fields = ('id', 'group', 'title', 'date', 'homework', 'created_at', 'ended_at')
         read_only_fields = ('group', 'ended_at')
+
+
+class GroupDayOffSerializer(serializers.ModelSerializer):
+    class Meta:
+        model  = GroupDayOff
+        fields = ('id', 'group', 'date', 'reason', 'note', 'created_by', 'created_at')
+        read_only_fields = ('group', 'created_by', 'created_at')
 
 
 class AttendanceSerializer(serializers.ModelSerializer):
