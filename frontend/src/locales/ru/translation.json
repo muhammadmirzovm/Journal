@@ -259,6 +259,8 @@
     "today_lessons_title": "Занятия сегодня",
     "today_lessons_empty": "На сегодня занятий не запланировано.",
     "create_lesson_btn": "Создать урок",
+    "lesson_created": "Урок создан",
+    "open_lesson_btn": "Открыть урок",
     "my_children": "Мои дети",
     "no_children": "Детей ещё нет. Обратитесь к администратору академии.",
     "view_all": "Все группы",

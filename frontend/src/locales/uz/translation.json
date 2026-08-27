@@ -259,6 +259,8 @@
     "today_lessons_title": "Bugungi darslar",
     "today_lessons_empty": "Bugun rejalashtirilgan darsingiz yo'q.",
     "create_lesson_btn": "Dars yaratish",
+    "lesson_created": "Dars yaratilgan",
+    "open_lesson_btn": "Darsni ochish",
     "my_children": "Mening farzandlarim",
     "no_children": "Hali bog'langan farzandlar yo'q. Akademiya adminiga murojaat qiling.",
     "view_all": "Barchasini ko'rish",

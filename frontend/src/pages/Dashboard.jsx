@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
-import { Users, BookOpen, Plus, LogIn, ArrowRight, GraduationCap, X, Loader2, Trophy, Star, MessageCircle, BookMarked, ClipboardList, ScanLine, PiggyBank, Calendar, Clock } from 'lucide-react'
-import { getGroups, joinGroup, getAcademyAnnouncements, createAcademyAnnouncement, deleteAnnouncement } from '../api/groups'
+import { Users, BookOpen, Plus, LogIn, ArrowRight, GraduationCap, X, Loader2, Trophy, Star, MessageCircle, BookMarked, ClipboardList, ScanLine, PiggyBank, Calendar, Clock, CheckCircle2 } from 'lucide-react'
+import { getGroups, joinGroup, getAcademyAnnouncements, createAcademyAnnouncement, deleteAnnouncement, getLessons } from '../api/groups'
 import { getAdminStats, connectTelegram } from '../api/users'
 import { AnnouncementsSection } from '../components/AnnouncementCard'
 import DashboardLeaderboard from '../components/DashboardLeaderboard'
@@ -44,6 +44,24 @@ export default function Dashboard() {
   // class_days uses 0=Monday…6=Sunday, Date#getDay() uses 0=Sunday — convert.
   const todayDow = (new Date().getDay() + 6) % 7
   const todayGroups = groups.filter(g => !g.is_graduated && (g.class_days || []).includes(todayDow))
+
+  const [todayLessons, setTodayLessons] = useState({}) // { [groupId]: lessonId }
+  const [todayLessonsLoading, setTodayLessonsLoading] = useState(true)
+
+  useEffect(() => {
+    const dow = (new Date().getDay() + 6) % 7
+    const groupsToday = groups.filter(g => !g.is_graduated && (g.class_days || []).includes(dow))
+    if (role !== 'teacher' || groupsToday.length === 0) { setTodayLessonsLoading(false); return }
+    const todayStr = new Date().toISOString().slice(0, 10)
+    setTodayLessonsLoading(true)
+    Promise.all(groupsToday.map(g =>
+      getLessons(g.id, 1).then(r => {
+        const found = r.data.results.find(l => l.date === todayStr)
+        return [g.id, found ? found.id : null]
+      })
+    )).then(entries => setTodayLessons(Object.fromEntries(entries)))
+      .finally(() => setTodayLessonsLoading(false))
+  }, [groups, role])
 
   const [showJoin, setShowJoin] = useState(false)
   const [joinKey,  setJoinKey]  = useState('')
@@ -175,6 +193,60 @@ export default function Dashboard() {
         onPost={handlePostAnn}
         onDelete={handleDeleteAnn}
       />
+
+      {role === 'teacher' && (
+        <div style={{ marginBottom: 32 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
+            <Calendar size={17} color="var(--accent)" />
+            <h3 style={{ fontWeight: 700, fontSize: 16 }}>{t('dashboard.today_lessons_title')}</h3>
+          </div>
+          {loading ? (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 14 }}>
+              <CardSkeleton />
+            </div>
+          ) : todayGroups.length === 0 ? (
+            <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 12, padding: '20px 24px', color: 'var(--text-muted)', fontSize: 13 }}>
+              {t('dashboard.today_lessons_empty')}
+            </div>
+          ) : (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 14 }}>
+              {todayGroups.map((g, i) => {
+                const lessonId = todayLessons[g.id]
+                return (
+                  <motion.div key={g.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.06 }}
+                    style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 10, overflow: 'hidden', boxShadow: 'var(--shadow-sm)' }}>
+                    <div style={{ height: 4, background: lessonId ? 'var(--success, #22C55E)' : 'var(--accent)' }} />
+                    <div style={{ padding: '16px 18px' }}>
+                      <Link to={`/groups/${g.id}`} style={{ fontWeight: 700, fontSize: 14, textDecoration: 'none', color: 'var(--text)', display: 'block', marginBottom: 6 }}>{g.name}</Link>
+                      {g.class_time && (
+                        <p style={{ fontSize: 12, color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: 4, marginBottom: 12 }}>
+                          <Clock size={12} /> {g.class_time}
+                        </p>
+                      )}
+                      {todayLessonsLoading ? (
+                        <div style={{ height: 32, borderRadius: 8, background: 'var(--bg)' }} />
+                      ) : lessonId ? (
+                        <>
+                          <p style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 12, fontWeight: 700, color: '#22C55E', marginBottom: 8 }}>
+                            <CheckCircle2 size={13} /> {t('dashboard.lesson_created')}
+                          </p>
+                          <Link to={`/groups/${g.id}/lessons/${lessonId}`} style={{ ...secondaryBtn, fontSize: 12, padding: '7px 14px', width: '100%', justifyContent: 'center', boxSizing: 'border-box' }}>
+                            {t('dashboard.open_lesson_btn')}
+                          </Link>
+                        </>
+                      ) : (
+                        <Link to={`/groups/${g.id}?newLesson=1`} style={{ ...primaryBtn, fontSize: 12, padding: '7px 14px', width: '100%', justifyContent: 'center' }}>
+                          <Plus size={13} /> {t('dashboard.create_lesson_btn')}
+                        </Link>
+                      )}
+                    </div>
+                  </motion.div>
+                )
+              })}
+            </div>
+          )}
+        </div>
+      )}
 
       <DashboardLeaderboard />
 
@@ -423,43 +495,6 @@ export default function Dashboard() {
         </div>
       ) : role === 'teacher' ? (
         <div className="fade-up-3">
-
-          {/* Today's lessons */}
-          <div style={{ marginBottom: 32 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
-              <Calendar size={17} color="var(--accent)" />
-              <h3 style={{ fontWeight: 700, fontSize: 16 }}>{t('dashboard.today_lessons_title')}</h3>
-            </div>
-            {loading ? (
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 14 }}>
-                <CardSkeleton />
-              </div>
-            ) : todayGroups.length === 0 ? (
-              <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 12, padding: '20px 24px', color: 'var(--text-muted)', fontSize: 13 }}>
-                {t('dashboard.today_lessons_empty')}
-              </div>
-            ) : (
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 14 }}>
-                {todayGroups.map((g, i) => (
-                  <motion.div key={g.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.06 }}
-                    style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 10, overflow: 'hidden', boxShadow: 'var(--shadow-sm)' }}>
-                    <div style={{ height: 4, background: 'var(--accent)' }} />
-                    <div style={{ padding: '16px 18px' }}>
-                      <Link to={`/groups/${g.id}`} style={{ fontWeight: 700, fontSize: 14, textDecoration: 'none', color: 'var(--text)', display: 'block', marginBottom: 6 }}>{g.name}</Link>
-                      {g.class_time && (
-                        <p style={{ fontSize: 12, color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: 4, marginBottom: 12 }}>
-                          <Clock size={12} /> {g.class_time}
-                        </p>
-                      )}
-                      <Link to={`/groups/${g.id}?newLesson=1`} style={{ ...primaryBtn, fontSize: 12, padding: '7px 14px', width: '100%', justifyContent: 'center' }}>
-                        <Plus size={13} /> {t('dashboard.create_lesson_btn')}
-                      </Link>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            )}
-          </div>
 
           {/* Quick access */}
           <div className="teacher-quick-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14, marginBottom: 32 }}>
