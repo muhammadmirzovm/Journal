@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
-import { Users, BookOpen, Plus, LogIn, ArrowRight, GraduationCap, X, Loader2, Trophy, Star, MessageCircle, BookMarked, ClipboardList, ScanLine, PiggyBank, Calendar, Clock, CheckCircle2 } from 'lucide-react'
+import { Users, BookOpen, Plus, LogIn, ArrowRight, GraduationCap, X, Loader2, Trophy, Star, MessageCircle, BookMarked, ClipboardList, ScanLine, PiggyBank, Calendar, Clock, CheckCircle2, AlertCircle } from 'lucide-react'
 import { getGroups, joinGroup, getAcademyAnnouncements, createAcademyAnnouncement, deleteAnnouncement, getLessons } from '../api/groups'
 import { getAdminStats, connectTelegram } from '../api/users'
 import { AnnouncementsSection } from '../components/AnnouncementCard'
@@ -45,7 +45,7 @@ export default function Dashboard() {
   const todayDow = (new Date().getDay() + 6) % 7
   const todayGroups = groups.filter(g => !g.is_graduated && (g.class_days || []).includes(todayDow))
 
-  const [todayLessons, setTodayLessons] = useState({}) // { [groupId]: lessonId }
+  const [todayLessons, setTodayLessons] = useState({}) // { [groupId]: lesson | null }
   const [todayLessonsLoading, setTodayLessonsLoading] = useState(true)
 
   useEffect(() => {
@@ -57,11 +57,21 @@ export default function Dashboard() {
     Promise.all(groupsToday.map(g =>
       getLessons(g.id, 1).then(r => {
         const found = r.data.results.find(l => l.date === todayStr)
-        return [g.id, found ? found.id : null]
+        return [g.id, found || null]
       })
     )).then(entries => setTodayLessons(Object.fromEntries(entries)))
       .finally(() => setTodayLessonsLoading(false))
   }, [groups, role])
+
+  // class_time is "HH:MM-HH:MM" — true once today's start time has passed.
+  const isClassOverdue = classTime => {
+    if (!classTime) return false
+    const start = classTime.split('-')[0]?.trim()
+    const [h, m] = start.split(':').map(Number)
+    if (Number.isNaN(h) || Number.isNaN(m)) return false
+    const now = new Date()
+    return now.getHours() > h || (now.getHours() === h && now.getMinutes() >= m)
+  }
 
   const [showJoin, setShowJoin] = useState(false)
   const [joinKey,  setJoinKey]  = useState('')
@@ -211,33 +221,42 @@ export default function Dashboard() {
           ) : (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 14 }}>
               {todayGroups.map((g, i) => {
-                const lessonId = todayLessons[g.id]
+                const lesson = todayLessons[g.id]
+                const overdue = !lesson && isClassOverdue(g.class_time)
+                const accent = lesson ? (lesson.ended_at ? '#22C55E' : '#F59E0B') : (overdue ? '#EF4444' : 'var(--accent)')
                 return (
                   <motion.div key={g.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.06 }}
                     style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 10, overflow: 'hidden', boxShadow: 'var(--shadow-sm)' }}>
-                    <div style={{ height: 4, background: lessonId ? 'var(--success, #22C55E)' : 'var(--accent)' }} />
+                    <div style={{ height: 4, background: accent }} />
                     <div style={{ padding: '16px 18px' }}>
                       <Link to={`/groups/${g.id}`} style={{ fontWeight: 700, fontSize: 14, textDecoration: 'none', color: 'var(--text)', display: 'block', marginBottom: 6 }}>{g.name}</Link>
                       {g.class_time && (
-                        <p style={{ fontSize: 12, color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: 4, marginBottom: 12 }}>
+                        <p style={{ fontSize: 12, color: overdue ? '#EF4444' : 'var(--text-muted)', fontWeight: overdue ? 700 : 400, display: 'flex', alignItems: 'center', gap: 4, marginBottom: 12 }}>
                           <Clock size={12} /> {g.class_time}
                         </p>
                       )}
                       {todayLessonsLoading ? (
                         <div style={{ height: 32, borderRadius: 8, background: 'var(--bg)' }} />
-                      ) : lessonId ? (
+                      ) : lesson ? (
                         <>
-                          <p style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 12, fontWeight: 700, color: '#22C55E', marginBottom: 8 }}>
-                            <CheckCircle2 size={13} /> {t('dashboard.lesson_created')}
+                          <p style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 12, fontWeight: 700, color: accent, marginBottom: 8 }}>
+                            <CheckCircle2 size={13} /> {lesson.ended_at ? t('dashboard.lesson_done') : t('dashboard.lesson_in_progress')}
                           </p>
-                          <Link to={`/groups/${g.id}/lessons/${lessonId}`} style={{ ...secondaryBtn, fontSize: 12, padding: '7px 14px', width: '100%', justifyContent: 'center', boxSizing: 'border-box' }}>
+                          <Link to={`/groups/${g.id}/lessons/${lesson.id}`} style={{ ...secondaryBtn, fontSize: 12, padding: '7px 14px', width: '100%', justifyContent: 'center', boxSizing: 'border-box' }}>
                             {t('dashboard.open_lesson_btn')}
                           </Link>
                         </>
                       ) : (
-                        <Link to={`/groups/${g.id}?newLesson=1`} style={{ ...primaryBtn, fontSize: 12, padding: '7px 14px', width: '100%', justifyContent: 'center' }}>
-                          <Plus size={13} /> {t('dashboard.create_lesson_btn')}
-                        </Link>
+                        <>
+                          {overdue && (
+                            <p style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 12, fontWeight: 700, color: '#EF4444', marginBottom: 8 }}>
+                              <AlertCircle size={13} /> {t('dashboard.lesson_overdue')}
+                            </p>
+                          )}
+                          <Link to={`/groups/${g.id}?newLesson=1`} style={{ ...primaryBtn, fontSize: 12, padding: '7px 14px', width: '100%', justifyContent: 'center', background: overdue ? '#EF4444' : primaryBtn.background }}>
+                            <Plus size={13} /> {t('dashboard.create_lesson_btn')}
+                          </Link>
+                        </>
                       )}
                     </div>
                   </motion.div>
