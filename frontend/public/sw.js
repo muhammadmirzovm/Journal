@@ -1,7 +1,7 @@
 self.addEventListener('push', event => {
   const data = event.data?.json() ?? {}
   event.waitUntil(
-    self.registration.showNotification(data.title || 'AcademyJournal', {
+    self.registration.showNotification(data.title || 'Journaly', {
       body: data.body || '',
       icon: '/favicon.svg',
       badge: '/favicon.svg',

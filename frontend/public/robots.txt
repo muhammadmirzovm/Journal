@@ -14,4 +14,4 @@ Disallow: /exams
 Disallow: /questions
 Disallow: /invite
 
-Sitemap: https://academyjournal.vercel.app/sitemap.xml
+Sitemap: https://journaly.uz/sitemap.xml

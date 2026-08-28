@@ -54,7 +54,7 @@ function DashboardMockup() {
           {['#EF4444','#F59E0B','#22C55E'].map(c => <div key={c} style={{ width: 10, height: 10, borderRadius: '50%', background: c }} />)}
         </div>
         <div style={{ flex: 1, background: 'var(--surface)', borderRadius: 5, padding: '4px 12px', fontSize: 10, color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: 6, maxWidth: 220, margin: '0 auto' }}>
-          <ShieldCheck size={9} color="var(--accent)" /> academyjournal.vercel.app
+          <ShieldCheck size={9} color="var(--accent)" /> journaly.uz
         </div>
       </div>
 
@@ -126,7 +126,7 @@ function ParentMockup() {
           {['#EF4444','#F59E0B','#22C55E'].map(c => <div key={c} style={{ width: 10, height: 10, borderRadius: '50%', background: c }} />)}
         </div>
         <div style={{ flex: 1, background: 'var(--surface)', borderRadius: 5, padding: '4px 12px', fontSize: 10, color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: 6, maxWidth: 220, margin: '0 auto' }}>
-          <ShieldCheck size={9} color="var(--accent)" /> academyjournal.vercel.app/dashboard
+          <ShieldCheck size={9} color="var(--accent)" /> journaly.uz/dashboard
         </div>
       </div>
 
@@ -200,7 +200,7 @@ function TelegramMockup() {
           <MessageCircle size={15} color="#fff" />
         </div>
         <div>
-          <p style={{ fontSize: 12, fontWeight: 700, color: '#fff' }}>AcademyJournal Bot</p>
+          <p style={{ fontSize: 12, fontWeight: 700, color: '#fff' }}>Journaly Bot</p>
           <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.4)' }}>@academyjournal_bot · online</p>
         </div>
       </div>
@@ -686,7 +686,7 @@ export default function Landing() {
               <div style={{ width: 30, height: 30, background: 'var(--accent)', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <GraduationCap size={16} color="#fff" />
               </div>
-              <span style={{ fontFamily: 'var(--font-display)', fontSize: 17, fontWeight: 800 }}>Academy Journal</span>
+              <span style={{ fontFamily: 'var(--font-display)', fontSize: 17, fontWeight: 800 }}>Journaly</span>
             </div>
             <p style={{ color: 'var(--text-muted)', fontSize: 13, maxWidth: 240, lineHeight: 1.6 }}>{t('footer.tagline')}</p>
           </div>
@@ -704,13 +704,13 @@ export default function Landing() {
             <a href="mailto:academyjournalsupport@gmail.com" className="foot-link" style={{ ...footLinkStyle, display: 'inline-flex', alignItems: 'center', gap: 7 }}>
               <Mail size={14} /> academyjournalsupport@gmail.com
             </a>
-            <a href="https://t.me/AcademyJournalBot" target="_blank" rel="noopener noreferrer" className="foot-link" style={{ ...footLinkStyle, display: 'inline-flex', alignItems: 'center', gap: 7 }}>
-              <Send size={14} /> @AcademyJournalBot
+            <a href="https://t.me/journalyuzbot" target="_blank" rel="noopener noreferrer" className="foot-link" style={{ ...footLinkStyle, display: 'inline-flex', alignItems: 'center', gap: 7 }}>
+              <Send size={14} /> @journalyuzbot
             </a>
           </div>
         </div>
         <div style={{ borderTop: '1px solid var(--border)', paddingTop: 20, textAlign: 'center', color: 'var(--text-muted)', fontSize: 12.5 }}>
-          © 2026 Academy Journal · {t('footer.rights')}
+          © 2026 Journaly · {t('footer.rights')}
         </div>
       </footer>
 

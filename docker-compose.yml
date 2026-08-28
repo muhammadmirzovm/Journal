@@ -55,7 +55,7 @@ services:
       context: .
       dockerfile: deploy/web.Dockerfile
       args:
-        VITE_API_URL: https://${API_DOMAIN}/api
+        VITE_API_URL: https://${CANONICAL_API_DOMAIN}/api
     restart: unless-stopped
     mem_limit: 150m
     depends_on:
