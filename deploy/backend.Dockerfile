@@ -1,4 +1,4 @@
-# AcademyJournal backend (Django + Daphne ASGI).
+# Journaly backend (Django + Daphne ASGI).
 # Build context = repo root.
 FROM python:3.13-slim
 

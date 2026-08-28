@@ -16,7 +16,7 @@ TELEGRAM_BOT_TOKEN       = os.environ.get('TELEGRAM_BOT_TOKEN', '')
 TELEGRAM_WEBHOOK_SECRET  = os.environ.get('TELEGRAM_WEBHOOK_SECRET', '')
 VAPID_PRIVATE_KEY        = os.environ.get('VAPID_PRIVATE_KEY', '')
 VAPID_PUBLIC_KEY         = os.environ.get('VAPID_PUBLIC_KEY', '')
-VAPID_CLAIMS_EMAIL       = os.environ.get('VAPID_CLAIMS_EMAIL', 'admin@academyjournal.uz')
+VAPID_CLAIMS_EMAIL       = os.environ.get('VAPID_CLAIMS_EMAIL', 'admin@journaly.uz')
 
 # Trust Fly.io / reverse-proxy HTTPS headers so build_absolute_uri returns https://
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')

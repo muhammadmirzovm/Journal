@@ -1,4 +1,4 @@
-# AcademyJournal frontend (Vite/React build) served by Caddy, which also
+# Journaly frontend (Vite/React build) served by Caddy, which also
 # terminates TLS (automatic Let's Encrypt) and reverse-proxies the API host
 # to the backend container.
 # Build context = repo root.

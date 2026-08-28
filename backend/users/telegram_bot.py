@@ -1,5 +1,5 @@
 """
-Telegram bot for AcademyJournal — webhook mode.
+Telegram bot for Journaly — webhook mode.
 """
 
 import os
@@ -23,8 +23,8 @@ MSG = {
 
         'welcome_unlinked': (
             "Salom, {name}! 👋\n\n"
-            "Bu bot AcademyJournal uchun.\n"
-            "Hisobingizni ulash uchun AcademyJournal Profilingizga o'ting "
+            "Bu bot Journaly uchun.\n"
+            "Hisobingizni ulash uchun Journaly Profilingizga o'ting "
             "va «Telegramni ulash» tugmasini bosing.\n\n"
             "📌 Buyruqlar:\n"
             "/help — yordam"
@@ -74,45 +74,45 @@ MSG = {
         'invalid_link':  "❌ Bu havola yaroqsiz yoki allaqachon ishlatilgan.",
         'expired_link':  "❌ Bu havolaning muddati tugagan. Profilingizdan yangi havola oling.",
         'already_taken': "❌ Bu Telegram hisobi boshqa foydalanuvchiga bog'langan.",
-        'not_linked':    "❌ Hisobingiz ulanmagan. AcademyJournal Profilingizga o'ting va Telegramni ulang.",
+        'not_linked':    "❌ Hisobingiz ulanmagan. Journaly Profilingizga o'ting va Telegramni ulang.",
         'no_data':       "📭 Hozircha ma'lumot yo'q.",
         'otp': (
-            "🔐 AcademyJournal — parolni tiklash\n\n"
+            "🔐 Journaly — parolni tiklash\n\n"
             "Sizning OTP kodingiz: *{code}*\n\n"
             "Kod 5 daqiqa ichida amal qiladi. Uni hech kimga bermang."
         ),
 
         # ── Help messages ──────────────────────────────────────────────────
         'help_student': (
-            "📚 *AcademyJournal Bot*\n\n"
+            "📚 *Journaly Bot*\n\n"
             "/mystats — ballar va davomatni ko'rish\n"
             "/myrank — reytingdagi o'rningiz\n"
             "/homework — barcha uy vazifalarini ko'rish\n"
             "/help — shu ro'yxat"
         ),
         'help_teacher': (
-            "📚 *AcademyJournal Bot*\n\n"
+            "📚 *Journaly Bot*\n\n"
             "/mygroups — guruhlaringiz statistikasi\n"
             "/struggling — qiynalayotgan o'quvchilar\n"
             "/nolesson — bugun/boshqa kuni dars yo'qligini belgilash\n"
             "/help — shu ro'yxat"
         ),
         'help_admin': (
-            "📚 *AcademyJournal Bot*\n\n"
+            "📚 *Journaly Bot*\n\n"
             "/academy — akademiya statistikasi\n"
             "/holiday — bayram kunini belgilash\n"
             "/help — shu ro'yxat"
         ),
         'help_parent': (
-            "📚 *AcademyJournal Bot*\n\n"
+            "📚 *Journaly Bot*\n\n"
             "/mystats — farzandlaringiz statistikasi\n"
             "/lessons — so'nggi darslar (masalan: /lessons 10)\n"
             "/help — shu ro'yxat"
         ),
         'help_other': (
-            "📚 *AcademyJournal Bot*\n\n"
+            "📚 *Journaly Bot*\n\n"
             "/help — shu ro'yxat\n\n"
-            "Hisobingizni ulash uchun AcademyJournal Profilingizga o'ting."
+            "Hisobingizni ulash uchun Journaly Profilingizga o'ting."
         ),
 
         # ── Student stats ──────────────────────────────────────────────────
@@ -188,8 +188,8 @@ MSG = {
 
         'welcome_unlinked': (
             "Привет, {name}! 👋\n\n"
-            "Этот бот используется AcademyJournal.\n"
-            "Чтобы привязать аккаунт, перейдите в Профиль в AcademyJournal "
+            "Этот бот используется Journaly.\n"
+            "Чтобы привязать аккаунт, перейдите в Профиль в Journaly "
             "и нажмите «Подключить Telegram».\n\n"
             "📌 Команды:\n"
             "/help — помощь"
@@ -239,45 +239,45 @@ MSG = {
         'invalid_link':  "❌ Эта ссылка недействительна или уже была использована.",
         'expired_link':  "❌ Срок действия ссылки истёк. Получите новую ссылку в Профиле.",
         'already_taken': "❌ Этот Telegram уже привязан к другому аккаунту.",
-        'not_linked':    "❌ Аккаунт не привязан. Перейдите в Профиль AcademyJournal и привяжите Telegram.",
+        'not_linked':    "❌ Аккаунт не привязан. Перейдите в Профиль Journaly и привяжите Telegram.",
         'no_data':       "📭 Данных пока нет.",
         'otp': (
-            "🔐 AcademyJournal — сброс пароля\n\n"
+            "🔐 Journaly — сброс пароля\n\n"
             "Ваш OTP-код: *{code}*\n\n"
             "Код действителен 5 минут. Не передавайте его никому."
         ),
 
         # ── Help messages ──────────────────────────────────────────────────
         'help_student': (
-            "📚 *AcademyJournal Bot*\n\n"
+            "📚 *Journaly Bot*\n\n"
             "/mystats — оценки и посещаемость\n"
             "/myrank — ваше место в рейтинге\n"
             "/homework — домашние задания\n"
             "/help — этот список"
         ),
         'help_teacher': (
-            "📚 *AcademyJournal Bot*\n\n"
+            "📚 *Journaly Bot*\n\n"
             "/mygroups — статистика групп\n"
             "/struggling — отстающие ученики\n"
             "/nolesson — отметить «нет урока» на сегодня/другой день\n"
             "/help — этот список"
         ),
         'help_admin': (
-            "📚 *AcademyJournal Bot*\n\n"
+            "📚 *Journaly Bot*\n\n"
             "/academy — статистика академии\n"
             "/holiday — отметить праздничный день\n"
             "/help — этот список"
         ),
         'help_parent': (
-            "📚 *AcademyJournal Bot*\n\n"
+            "📚 *Journaly Bot*\n\n"
             "/mystats — статистика детей\n"
             "/lessons — последние уроки (например: /lessons 10)\n"
             "/help — этот список"
         ),
         'help_other': (
-            "📚 *AcademyJournal Bot*\n\n"
+            "📚 *Journaly Bot*\n\n"
             "/help — этот список\n\n"
-            "Привяжите аккаунт в Профиле AcademyJournal."
+            "Привяжите аккаунт в Профиле Journaly."
         ),
 
         # ── Student stats ──────────────────────────────────────────────────
@@ -989,7 +989,7 @@ async def username_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not user:
         await update.message.reply_text(
             "❌ Hisobingiz ulanmagan.\n"
-            "AcademyJournal Profilingizga o'ting va Telegramni ulang."
+            "Journaly Profilingizga o'ting va Telegramni ulang."
         )
         return
 
@@ -1144,7 +1144,7 @@ async def chatid_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
     await update.message.reply_text(
         f"Bu guruhning Chat ID si:\n`{chat.id}`\n\n"
-        "AcademyJournal Settings → Telegram guruhlar bo'limiga shu raqamni kiriting.",
+        "Journaly Settings → Telegram guruhlar bo'limiga shu raqamni kiriting.",
         parse_mode='Markdown',
     )
 
@@ -1451,7 +1451,7 @@ async def dailyreport_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not tg:
         await update.message.reply_text(
             "Bu guruh hech qaysi akademiyaga bog'lanmagan.\n"
-            "AcademyJournal → Settings → Telegram guruhlar bo'limida shu guruhni qo'shing."
+            "Journaly → Settings → Telegram guruhlar bo'limida shu guruhni qo'shing."
         )
         return
 

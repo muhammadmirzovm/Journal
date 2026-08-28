@@ -53,6 +53,6 @@ class CustomUserAdmin(UserAdmin):
     list_display = ('username', 'email', 'role', 'is_staff')
     list_filter = ('role', 'is_staff')
     fieldsets = UserAdmin.fieldsets + (
-        ('Academy Journal', {'fields': ('role','bio')}),
+        ('Journaly', {'fields': ('role','bio')}),
     )
     actions = [reset_coin_balance]

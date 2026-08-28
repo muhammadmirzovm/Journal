@@ -201,7 +201,7 @@ function TelegramMockup() {
         </div>
         <div>
           <p style={{ fontSize: 12, fontWeight: 700, color: '#fff' }}>Journaly Bot</p>
-          <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.4)' }}>@academyjournal_bot · online</p>
+          <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.4)' }}>@journalyuzbot · online</p>
         </div>
       </div>
       <div style={{ padding: '12px 10px', display: 'flex', flexDirection: 'column', gap: 7 }}>

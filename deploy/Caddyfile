@@ -1,4 +1,4 @@
-# AcademyJournal reverse proxy / TLS termination (Caddy).
+# Journaly reverse proxy / TLS termination (Caddy).
 # Caddy obtains and renews Let's Encrypt certificates automatically for both
 # hostnames — no host nginx, no certbot needed.
 

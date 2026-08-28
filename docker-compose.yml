@@ -1,6 +1,6 @@
 name: academyjournal
 
-# AcademyJournal self-hosted stack — single-tenant deploy on an Oracle Cloud
+# Journaly self-hosted stack — single-tenant deploy on an Oracle Cloud
 # Always Free VM (1 vCPU / 1GB RAM). Caddy terminates TLS itself (automatic
 # Let's Encrypt certs for both hostnames), so no host nginx is needed —
 # ports 80/443 are published directly.

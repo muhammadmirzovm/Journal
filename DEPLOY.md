@@ -1,4 +1,4 @@
-# AcademyJournal — Deployment (Docker + CI/CD)
+# Journaly — Deployment (Docker + CI/CD)
 
 Self-hosted on an **Oracle Cloud Always Free** VM — genuinely free forever
 (no time limit, no card charges as long as you stay within the Always Free

@@ -23,7 +23,7 @@ MSG = {
             "⏰ Eslatma!\n\n"
             "*{group}* guruhida bugun dars bo'lishi kerak edi, "
             "lekin siz hali dars yaratmadingiz.\n"
-            "AcademyJournal'ga kiring va dars yarating."
+            "Journaly'ga kiring va dars yarating."
         ),
     },
     'ru': {
@@ -40,7 +40,7 @@ MSG = {
             "⏰ Напоминание!\n\n"
             "В группе *{group}* сегодня должно быть занятие, "
             "но вы ещё не создали урок.\n"
-            "Войдите в AcademyJournal и создайте урок."
+            "Войдите в Journaly и создайте урок."
         ),
     },
 }
