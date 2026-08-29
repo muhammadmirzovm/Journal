@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect } from 'react'
 import api from '../api/axios'
 import { registerPush } from '../utils/push'
+import { getTelegramWebApp } from '../utils/telegram'
 
 const AuthContext = createContext(null)
 
@@ -14,9 +15,19 @@ export function AuthProvider({ children }) {
       api.get('/auth/me/').then(r => { setUser(r.data); registerPush() }).catch(() => {
         localStorage.clear()
       }).finally(() => setLoading(false))
-    } else {
-      setLoading(false)
+      return
     }
+
+    const webApp = getTelegramWebApp()
+    if (webApp) {
+      api.post('/auth/telegram/miniapp-login/', { init_data: webApp.initData })
+        .then(r => { if (r.data.linked) login(r.data.tokens, r.data.user) })
+        .catch(() => {})
+        .finally(() => setLoading(false))
+      return
+    }
+
+    setLoading(false)
   }, [])
 
   const login = (tokens, userData) => {

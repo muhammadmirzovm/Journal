@@ -709,6 +709,36 @@ class ConnectTelegramView(APIView):
         return Response({'detail': 'Telegram disconnected.'})
 
 
+class TelegramMiniAppLoginView(APIView):
+    """Silent login for the Telegram Mini App: verifies `Telegram.WebApp.initData`
+    and, if that Telegram account is already linked to a user, issues JWTs —
+    same response shape as RegisterView, so the frontend reuses its login()."""
+    permission_classes = (permissions.AllowAny,)
+
+    def post(self, request):
+        from .telegram_webapp import verify_init_data
+
+        init_data = request.data.get('init_data', '')
+        bot_token = getattr(settings, 'TELEGRAM_BOT_TOKEN', '')
+        tg_user = verify_init_data(init_data, bot_token)
+        if not tg_user:
+            return Response({'detail': 'Invalid Telegram data.'}, status=400)
+
+        user = User.objects.filter(telegram_id=tg_user.get('id')).first()
+        if not user:
+            return Response({'linked': False})
+
+        refresh = RefreshToken.for_user(user)
+        return Response({
+            'linked': True,
+            'user': UserSerializer(user, context={'request': request}).data,
+            'tokens': {
+                'access': str(refresh.access_token),
+                'refresh': str(refresh),
+            },
+        })
+
+
 class PasswordResetRequestView(APIView):
     """Step 1 — user enters their username, OTP is sent to their Telegram."""
     permission_classes = (permissions.AllowAny,)

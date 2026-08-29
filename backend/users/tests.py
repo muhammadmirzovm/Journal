@@ -1,8 +1,29 @@
+import hashlib
+import hmac
+import json
+import time
+
 import pytest
 from django.contrib.auth import get_user_model
+from django.test import override_settings
 from rest_framework.test import APIClient
 
 User = get_user_model()
+
+TEST_BOT_TOKEN = 'test-bot-token'
+
+
+def _make_init_data(user_dict, bot_token=TEST_BOT_TOKEN, auth_date=None):
+    fields = {
+        'auth_date': str(auth_date if auth_date is not None else int(time.time())),
+        'query_id': 'AAабвгд',
+        'user': json.dumps(user_dict, separators=(',', ':')),
+    }
+    data_check_string = '\n'.join(f'{k}={v}' for k, v in sorted(fields.items()))
+    secret_key = hmac.new(b'WebAppData', bot_token.encode(), hashlib.sha256).digest()
+    fields['hash'] = hmac.new(secret_key, data_check_string.encode(), hashlib.sha256).hexdigest()
+    from urllib.parse import urlencode
+    return urlencode(fields)
 
 
 @pytest.fixture
@@ -303,3 +324,68 @@ def test_reset_coin_balance_scoped_to_own_academy_for_non_superuser():
 
     assert CoinTransaction.balance_for(own_student) == 0
     assert CoinTransaction.balance_for(other_student) == 10  # untouched — different academy
+
+
+# ── Telegram Mini App login ─────────────────────────────────────────────────
+
+def test_verify_init_data_accepts_valid_signature():
+    from users.telegram_webapp import verify_init_data
+
+    init_data = _make_init_data({'id': 555, 'first_name': 'Test'})
+    result = verify_init_data(init_data, TEST_BOT_TOKEN)
+    assert result == {'id': 555, 'first_name': 'Test'}
+
+
+def test_verify_init_data_rejects_tampered_hash():
+    from users.telegram_webapp import verify_init_data
+
+    init_data = _make_init_data({'id': 555, 'first_name': 'Test'})
+    tampered = init_data.replace('Test', 'Evil')
+    assert verify_init_data(tampered, TEST_BOT_TOKEN) is None
+
+
+def test_verify_init_data_rejects_wrong_bot_token():
+    from users.telegram_webapp import verify_init_data
+
+    init_data = _make_init_data({'id': 555, 'first_name': 'Test'})
+    assert verify_init_data(init_data, 'a-different-token') is None
+
+
+def test_verify_init_data_rejects_expired_auth_date():
+    from users.telegram_webapp import verify_init_data
+
+    stale = int(time.time()) - 25 * 60 * 60
+    init_data = _make_init_data({'id': 555, 'first_name': 'Test'}, auth_date=stale)
+    assert verify_init_data(init_data, TEST_BOT_TOKEN) is None
+
+
+@override_settings(TELEGRAM_BOT_TOKEN=TEST_BOT_TOKEN)
+def test_miniapp_login_linked_account_returns_tokens(client, db):
+    from academies.models import Academy
+    academy = Academy.objects.create(name='TG Academy', slug='tg-academy')
+    user = User.objects.create_user(
+        username='tguser', password='pass1234',
+        role='student', academy=academy, telegram_id=777,
+    )
+    init_data = _make_init_data({'id': 777, 'first_name': 'Tg'})
+
+    res = client.post('/api/auth/telegram/miniapp-login/', {'init_data': init_data})
+
+    assert res.status_code == 200
+    assert res.data['linked'] is True
+    assert res.data['user']['id'] == user.id
+    assert 'access' in res.data['tokens']
+
+
+@override_settings(TELEGRAM_BOT_TOKEN=TEST_BOT_TOKEN)
+def test_miniapp_login_unlinked_account_returns_not_linked(client, db):
+    init_data = _make_init_data({'id': 999, 'first_name': 'Nobody'})
+    res = client.post('/api/auth/telegram/miniapp-login/', {'init_data': init_data})
+    assert res.status_code == 200
+    assert res.data['linked'] is False
+
+
+@override_settings(TELEGRAM_BOT_TOKEN=TEST_BOT_TOKEN)
+def test_miniapp_login_invalid_signature_rejected(client, db):
+    res = client.post('/api/auth/telegram/miniapp-login/', {'init_data': 'garbage=1&hash=deadbeef'})
+    assert res.status_code == 400
