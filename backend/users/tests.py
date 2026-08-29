@@ -389,3 +389,10 @@ def test_miniapp_login_unlinked_account_returns_not_linked(client, db):
 def test_miniapp_login_invalid_signature_rejected(client, db):
     res = client.post('/api/auth/telegram/miniapp-login/', {'init_data': 'garbage=1&hash=deadbeef'})
     assert res.status_code == 400
+
+
+@override_settings(TELEGRAM_BOT_TOKEN=TEST_BOT_TOKEN)
+def test_miniapp_login_malformed_init_data_rejected_not_500(client, db):
+    # No "=" in the field — must not raise, just be treated as invalid.
+    res = client.post('/api/auth/telegram/miniapp-login/', {'init_data': 'garbage'})
+    assert res.status_code == 400

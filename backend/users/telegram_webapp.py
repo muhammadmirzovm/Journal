@@ -20,7 +20,7 @@ def verify_init_data(init_data, bot_token):
     if not init_data or not bot_token:
         return None
 
-    pairs = dict(parse_qsl(init_data, strict_parsing=True))
+    pairs = dict(parse_qsl(init_data))
     received_hash = pairs.pop('hash', None)
     if not received_hash:
         return None
