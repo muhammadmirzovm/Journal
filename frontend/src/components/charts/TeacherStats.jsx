@@ -97,7 +97,7 @@ export default function TeacherStats({ stats }) {
             <p style={{ ...cardTitle, marginBottom: 0 }}>{t('teacher_stats.timetable')}</p>
           </div>
           <p style={cardSub}>{t('teacher_stats.timetable_sub')}</p>
-          <div style={{ overflowX: 'auto' }}>
+          <div className="scroll-fade" style={{ overflowX: 'auto' }}>
             <table style={{ borderCollapse: 'collapse', width: '100%', minWidth: 560, fontVariantNumeric: 'tabular-nums' }}>
               <thead>
                 <tr>

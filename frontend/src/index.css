@@ -123,6 +123,15 @@ a { transition: color 0.15s, opacity 0.15s; }
   /* Tab rows: smaller padding so they don't overflow */
   .tab-btn { padding: 8px 10px !important; font-size: 11px !important; }
 
+  /* Scrollable tab rows: right-edge fade hints there's more to swipe to */
+  .scroll-fade { position: relative !important; }
+  .scroll-fade::after {
+    content: '';
+    position: absolute; top: 0; right: 0; bottom: 0;
+    width: 24px; pointer-events: none;
+    background: linear-gradient(to right, transparent, var(--bg));
+  }
+
   /* Stats row wraps below save button */
   .stats-row { flex-wrap: wrap !important; row-gap: 8px !important; }
 

@@ -38,6 +38,7 @@
     "inactive_badge": "Nofaol",
     "deactivate": "Nofaol qilish",
     "activate": "Faollashtirish",
+    "deactivate_confirm": "{{name}} nofaol qilinsinmi? U tizimga kira olmaydi va qayta faollashtirilmaguncha ro'yxatlar va hisobotlarda ko'rinmaydi.",
     "deactivated_toast": "O'quvchi nofaol qilindi",
     "activated_toast": "O'quvchi faollashtirildi"
   },

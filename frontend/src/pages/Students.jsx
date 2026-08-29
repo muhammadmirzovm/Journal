@@ -57,6 +57,10 @@ export default function Students() {
 
   const handleToggleActive = async (e, s) => {
     e.stopPropagation()
+    if (s.is_active) {
+      const name = `${s.first_name} ${s.last_name}`.trim() || s.username
+      if (!window.confirm(t('students.deactivate_confirm', { name }))) return
+    }
     try {
       await setStudentActive(s.id, !s.is_active)
       show(s.is_active ? t('students.deactivated_toast') : t('students.activated_toast'), 'success')

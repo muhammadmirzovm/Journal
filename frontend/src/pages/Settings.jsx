@@ -137,7 +137,7 @@ function CreateAcademy({ onCreated }) {
 
           <div>
             <label style={labelStyle}>{t('settings.brand_color')}</label>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 10 }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 8 }}>
               {PRESET_COLORS.map(c => (
                 <button key={c} type="button" onClick={() => setForm(f => ({ ...f, primary_color: c }))}
                   style={{
@@ -147,14 +147,19 @@ function CreateAcademy({ onCreated }) {
                     transform: form.primary_color === c ? 'scale(1.15)' : 'scale(1)',
                   }} />
               ))}
+              {/* Custom — a swatch-sized native color-picker trigger instead of a full extra row */}
+              <label title={form.primary_color} style={{
+                position: 'relative', width: 32, height: 32, borderRadius: 8, cursor: 'pointer',
+                background: form.primary_color, border: '2px dashed rgba(148,163,184,0.6)',
+                outline: PRESET_COLORS.includes(form.primary_color) ? 'none' : `3px solid ${form.primary_color}`,
+                outlineOffset: 2,
+              }}>
+                <input type="color" value={form.primary_color}
+                  onChange={e => setForm(f => ({ ...f, primary_color: e.target.value }))}
+                  style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', opacity: 0, cursor: 'pointer' }} />
+              </label>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <div style={{ width: 36, height: 36, borderRadius: 10, background: form.primary_color, border: '1px solid rgba(0,0,0,0.1)', flexShrink: 0 }} />
-              <input type="color" value={form.primary_color}
-                onChange={e => setForm(f => ({ ...f, primary_color: e.target.value }))}
-                style={{ width: 44, height: 36, borderRadius: 8, border: '1px solid rgba(0,0,0,0.1)', padding: 2, cursor: 'pointer' }} />
-              <span style={{ fontSize: 13, color: 'var(--text-muted)', fontFamily: 'monospace' }}>{form.primary_color}</span>
-            </div>
+            <p style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: 'monospace', marginTop: 6 }}>{form.primary_color}</p>
           </div>
 
           <motion.button type="submit" disabled={loading}
@@ -258,7 +263,7 @@ function AcademyTab({ academy, onUpdated }) {
       {/* Color */}
       <div>
         <label style={labelStyle}>{t('settings.brand_color')}</label>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 10 }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 8 }}>
           {PRESET_COLORS.map(c => (
             <button key={c} type="button" onClick={() => setForm(f => ({ ...f, primary_color: c }))}
               style={{
@@ -268,14 +273,19 @@ function AcademyTab({ academy, onUpdated }) {
                 transform: form.primary_color === c ? 'scale(1.15)' : 'scale(1)',
               }} />
           ))}
+          {/* Custom — a swatch-sized native color-picker trigger instead of a full extra row */}
+          <label title={form.primary_color} style={{
+            position: 'relative', width: 32, height: 32, borderRadius: 8, cursor: 'pointer',
+            background: form.primary_color, border: '2px dashed rgba(148,163,184,0.6)',
+            outline: PRESET_COLORS.includes(form.primary_color) ? 'none' : `3px solid ${form.primary_color}`,
+            outlineOffset: 2,
+          }}>
+            <input type="color" value={form.primary_color}
+              onChange={e => setForm(f => ({ ...f, primary_color: e.target.value }))}
+              style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', opacity: 0, cursor: 'pointer' }} />
+          </label>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <div style={{ width: 36, height: 36, borderRadius: 10, background: form.primary_color, border: '1px solid rgba(0,0,0,0.1)', flexShrink: 0 }} />
-          <input type="color" value={form.primary_color}
-            onChange={e => setForm(f => ({ ...f, primary_color: e.target.value }))}
-            style={{ width: 44, height: 36, borderRadius: 8, border: '1px solid rgba(0,0,0,0.1)', padding: 2, cursor: 'pointer' }} />
-          <span style={{ fontSize: 13, color: 'var(--text-muted)', fontFamily: 'monospace' }}>{form.primary_color}</span>
-        </div>
+        <p style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: 'monospace', marginTop: 6 }}>{form.primary_color}</p>
 
         {/* Live preview */}
         <div style={{

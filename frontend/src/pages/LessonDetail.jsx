@@ -140,7 +140,7 @@ export default function LessonDetail() {
       )}
 
       {/* Tabs */}
-      <div style={{ display: 'flex', gap: 4, borderBottom: '1px solid var(--border)', marginBottom: 24, overflowX: 'auto', scrollbarWidth: 'none' }}>
+      <div className="scroll-fade" style={{ display: 'flex', gap: 4, borderBottom: '1px solid var(--border)', marginBottom: 24, overflowX: 'auto', scrollbarWidth: 'none' }}>
         {tabs.map(item => (
           <button key={item.key} className="tab-btn" onClick={() => setTab(item.key)} style={{
             padding: '8px 18px', border: 'none', background: 'none', cursor: 'pointer',

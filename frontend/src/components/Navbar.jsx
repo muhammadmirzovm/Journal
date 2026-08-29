@@ -83,8 +83,7 @@ export default function Navbar() {
               <GraduationCap size={17} color="#fff" />
             </div>
             <span className="nav-brand-text" style={{ fontFamily: 'var(--font-display)', fontSize: 19, fontWeight: 800, letterSpacing: '-0.3px' }}>
-              <span style={{ color: '#fff' }}>Academy </span>
-              <span style={{ color: '#14B8A8' }}>Journal</span>
+              <span style={{ color: '#14B8A8' }}>Journaly</span>
             </span>
           </Link>
 

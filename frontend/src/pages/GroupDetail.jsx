@@ -421,7 +421,7 @@ export default function GroupDetail() {
       {!group.is_individual && members.some(m => m.comprehension !== null) && <Podium members={members} t={t} />}
 
       {/* Tabs */}
-      <div style={{ display: 'flex', gap: 4, borderBottom: '1px solid var(--border)', marginBottom: 24, overflowX: 'auto', scrollbarWidth: 'none' }}>
+      <div className="scroll-fade" style={{ display: 'flex', gap: 4, borderBottom: '1px solid var(--border)', marginBottom: 24, overflowX: 'auto', scrollbarWidth: 'none' }}>
         {[
           { key: 'lessons',       label: t('group_detail.tab_lessons') },
           ...(!group.is_individual ? [{ key: 'members', label: t('group_detail.tab_members') }] : []),

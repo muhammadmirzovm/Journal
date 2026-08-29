@@ -38,6 +38,7 @@
     "inactive_badge": "Inactive",
     "deactivate": "Deactivate",
     "activate": "Activate",
+    "deactivate_confirm": "Deactivate {{name}}? They won't be able to log in, and will be hidden from rosters and reports until reactivated.",
     "deactivated_toast": "Student deactivated",
     "activated_toast": "Student activated"
   },

@@ -37,8 +37,7 @@ export default function SplashLoader({ done }) {
               transition={{ delay: 0.2, duration: 0.35 }}
               style={{ fontFamily: 'var(--font-display)', fontSize: 28, fontWeight: 700, letterSpacing: '-0.5px' }}
             >
-              <span style={{ color: '#fff' }}>Academy </span>
-              <span style={{ color: 'var(--accent)' }}>Journal</span>
+              <span style={{ color: 'var(--accent)' }}>Journaly</span>
             </motion.div>
           </motion.div>
 
