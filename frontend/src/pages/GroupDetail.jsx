@@ -368,10 +368,10 @@ export default function GroupDetail() {
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 10, padding: '10px 16px' }}>
                   <Key size={14} color="var(--accent)" />
                   <span style={{ fontFamily: 'var(--font-mono)', fontSize: 15, letterSpacing: '0.12em', fontWeight: 600 }}>{group.join_key}</span>
-                  <motion.button whileTap={{ scale: 0.9 }} onClick={copy}
+                  <motion.button whileTap={{ scale: 0.9 }} onClick={copy} title={copied ? t('group_detail.copied') : t('group_detail.copy_key')}
                     style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, color: copied ? 'var(--success)' : 'var(--text-muted)', padding: 0 }}>
                     {copied ? <Check size={14} /> : <Copy size={14} />}
-                    {copied ? t('group_detail.copied') : t('group_detail.copy_key')}
+                    <span className="hd-btn-label">{copied ? t('group_detail.copied') : t('group_detail.copy_key')}</span>
                   </motion.button>
                 </div>
               )}
@@ -380,7 +380,7 @@ export default function GroupDetail() {
                   <UserPlus size={13} /> {t('group_detail.add_student')}
                 </motion.button>
               )}
-              <button onClick={() => setShowEditGroup(true)} style={ghostBtn}><Pencil size={13} /> {t('group_detail.edit_group')}</button>
+              <button onClick={() => setShowEditGroup(true)} title={t('group_detail.edit_group')} style={ghostBtn}><Pencil size={13} /> <span className="hd-btn-label">{t('group_detail.edit_group')}</span></button>
 
               {/* Secondary actions dropdown */}
               <div ref={actionsRef} style={{ position: 'relative' }}>

@@ -185,6 +185,10 @@ a { transition: color 0.15s, opacity 0.15s; }
   .group-detail-hd-btns { width: 100% !important; flex-wrap: wrap !important; }
   .group-detail-hd-btns > button, .group-detail-hd-btns > a, .group-detail-hd-btns > div { flex: 1 !important; justify-content: center !important; }
 
+  /* Header action labels: icon-only on mobile — some locales (e.g. Russian)
+     run long enough to force these onto their own wrapped row otherwise */
+  .hd-btn-label { display: none !important; }
+
   /* Form 2-column grids collapse */
   .form-grid-2 { grid-template-columns: 1fr !important; }
   .form-grid-3 { grid-template-columns: 1fr 1fr !important; }
