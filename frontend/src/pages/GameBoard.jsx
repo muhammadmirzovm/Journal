@@ -224,7 +224,7 @@ function Board({ board, answeredIds, doubleId, currentTeam, isTeacher, onPickSqu
   if (!topics.length) return <p style={{ color: 'var(--text-muted)', textAlign: 'center', padding: 40 }}>{t('quiz.no_questions_in_game')}</p>
 
   return (
-    <div style={{ overflowX: 'auto', maxWidth: 900, margin: '0 auto', width: '100%' }}>
+    <div className="scroll-fade" style={{ overflowX: 'auto', maxWidth: 900, margin: '0 auto', width: '100%' }}>
       <div style={{ display: 'grid', gridTemplateColumns: `repeat(${topics.length}, minmax(140px, 1fr))`, gap: 10, minWidth: topics.length * 150 }}>
         {topics.map(topic => (
           <div key={topic} style={{ background: 'var(--accent)', borderRadius: 10, padding: '12px 14px', textAlign: 'center', fontWeight: 800, fontSize: 14, color: '#fff' }}>
