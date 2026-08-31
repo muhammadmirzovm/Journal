@@ -123,6 +123,12 @@ a { transition: color 0.15s, opacity 0.15s; }
   /* Tab rows: smaller padding so they don't overflow */
   .tab-btn { padding: 8px 10px !important; font-size: 11px !important; }
 
+  /* Settings segmented tabs: icon-only — three equal-width segments don't
+     reliably fit longer locale strings (e.g. Russian "Приглашения") at
+     phone widths, so avoid truncation entirely rather than chase it */
+  .settings-tabs-btn span { display: none !important; }
+  .settings-tabs-btn { gap: 0 !important; }
+
   /* Scrollable tab rows: right-edge fade hints there's more to swipe to */
   .scroll-fade { position: relative !important; }
   .scroll-fade::after {
@@ -158,8 +164,19 @@ a { transition: color 0.15s, opacity 0.15s; }
   /* Card grids: single column on mobile */
   .mobile-single { grid-template-columns: 1fr !important; }
 
+  /* Streak/attendance stat row: 3 side-by-side cards don't leave enough
+     width per label in some locales — stack into one full-width panel
+     with a compact horizontal row per stat instead */
+  .stat-grid { grid-template-columns: 1fr !important; gap: 0 !important; border: 1px solid var(--border) !important; border-radius: 12px !important; overflow: hidden !important; }
+  .stat-card { display: flex !important; flex-direction: row-reverse !important; justify-content: space-between !important; align-items: center !important; text-align: left !important; border: none !important; border-radius: 0 !important; border-bottom: 1px solid var(--border) !important; padding: 12px 16px !important; }
+  .stat-card:last-child { border-bottom: none !important; }
+  .stat-card > div:last-child { margin-top: 0 !important; }
+
   /* Nudge banner: stack on mobile */
+  /* Icon+text stay on one line; the button drops to its own full-width row
+     instead of squeezing the text into a very narrow, many-line column */
   .nudge-banner { flex-wrap: wrap !important; gap: 10px !important; }
+  .nudge-banner-btn { flex-basis: 100% !important; width: 100% !important; }
 
   /* Member/score rows: shrink avatar */
   .member-avatar { width: 30px !important; height: 30px !important; font-size: 11px !important; }
@@ -188,6 +205,15 @@ a { transition: color 0.15s, opacity 0.15s; }
   /* Header action labels: icon-only on mobile — some locales (e.g. Russian)
      run long enough to force these onto their own wrapped row otherwise */
   .hd-btn-label { display: none !important; }
+  .group-detail-hd-btns > .hd-icon-btn {
+    flex: 0 0 auto !important; width: 36px !important; height: 36px !important;
+    padding: 0 !important; justify-content: center !important; border-radius: 10px !important;
+  }
+  /* The "…" dropdown was anchored right:0 for when this button sat at the
+     far right of a full-width row (desktop). On mobile these icon buttons
+     cluster on the left instead, so right:0 sent the (wider) dropdown
+     off the left edge of the screen — anchor from the left here instead. */
+  .hd-dropdown { left: 0 !important; right: auto !important; }
 
   /* Form 2-column grids collapse */
   .form-grid-2 { grid-template-columns: 1fr !important; }
@@ -195,6 +221,21 @@ a { transition: color 0.15s, opacity 0.15s; }
 
   /* Member row: allow wrapping on very small screens */
   .member-row-inner { flex-wrap: wrap !important; }
+
+  /* Settings members list: stack into a clean card instead of letting the
+     name/badge and the role-specific action button compete for the same
+     line (they could visually overlap when the row ran out of width) */
+  .member-row { flex-direction: column !important; align-items: stretch !important; }
+  .member-row > a { width: 100% !important; }
+  .member-date { display: none !important; }
+  .member-row-action { width: 100% !important; justify-content: center !important; }
+
+  /* Settings invite cards: same overlap risk as member rows — stack instead.
+     (align-items: flex-start, not stretch, so the 36px icon box doesn't
+     get stretched full-width too — only the content block and actions need it.) */
+  .invite-row { flex-direction: column !important; align-items: flex-start !important; gap: 8px !important; }
+  .invite-row > div:nth-child(2) { width: 100% !important; }
+  .invite-row-actions { width: 100% !important; justify-content: flex-end !important; }
 
   /* Exam result student card: wrap */
   .exam-result-student { flex-wrap: wrap !important; gap: 8px !important; }

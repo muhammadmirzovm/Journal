@@ -47,18 +47,18 @@ export default function AttendanceCalendar({ calendar, streak, attendanceSummary
   return (
     <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, padding: 20, boxShadow: 'var(--shadow-sm)' }}>
       {/* Streak / stats */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginBottom: 18 }}>
-        <div style={statCard}>
+      <div className="stat-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginBottom: 18 }}>
+        <div className="stat-card" style={statCard}>
           <div style={{ ...statBig, color: '#F59E0B' }}><Flame size={20} /> {streak?.current ?? 0}</div>
-          <div style={statLbl}>{t('profile.current_streak')}</div>
+          <div style={statLbl} lang={i18n.language}>{t('profile.current_streak')}</div>
         </div>
-        <div style={statCard}>
+        <div className="stat-card" style={statCard}>
           <div style={statBig}>{streak?.longest ?? 0}</div>
-          <div style={statLbl}>{t('profile.longest_streak')}</div>
+          <div style={statLbl} lang={i18n.language}>{t('profile.longest_streak')}</div>
         </div>
-        <div style={statCard}>
+        <div className="stat-card" style={statCard}>
           <div style={statBig}>{pct === null ? '—' : `${pct}%`}</div>
-          <div style={statLbl}>{t('profile.attendance')}</div>
+          <div style={statLbl} lang={i18n.language}>{t('profile.attendance')}</div>
         </div>
       </div>
 
@@ -95,9 +95,9 @@ export default function AttendanceCalendar({ calendar, streak, attendanceSummary
   )
 }
 
-const statCard = { background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: 12, padding: 14, textAlign: 'center' }
-const statBig  = { fontSize: 24, fontWeight: 800, lineHeight: 1, fontVariantNumeric: 'tabular-nums', display: 'inline-flex', alignItems: 'center', gap: 6 }
-const statLbl  = { fontSize: 11, color: 'var(--text-muted)', marginTop: 6 }
+const statCard = { minWidth: 0, background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: 12, padding: 14, textAlign: 'center' }
+const statBig  = { fontSize: 24, fontWeight: 800, lineHeight: 1, fontVariantNumeric: 'tabular-nums', display: 'inline-flex', alignItems: 'center', gap: 6, justifyContent: 'center' }
+const statLbl  = { fontSize: 11, color: 'var(--text-muted)', marginTop: 6, overflowWrap: 'break-word', hyphens: 'auto' }
 const navBtn   = { width: 30, height: 30, borderRadius: 8, border: '1px solid var(--border)', background: 'var(--surface)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }
 const legItem  = { display: 'flex', alignItems: 'center', gap: 7, fontSize: 12, color: 'var(--text-muted)', fontWeight: 600 }
 const sw       = { width: 14, height: 14, borderRadius: 5, flexShrink: 0 }

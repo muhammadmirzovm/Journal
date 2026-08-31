@@ -198,7 +198,7 @@ export default function QuestionBank() {
                   <span style={{ marginLeft: 'auto', fontSize: 11, color: 'var(--text-muted)' }}>{tp.question_count}</span>
                 </button>
                 {tp.created_by_id === user?.id && (
-                  <button onClick={() => setDeletingTopic(tp)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, color: 'var(--text-muted)', display: 'flex', borderRadius: 4 }}
+                  <button onClick={() => setDeletingTopic(tp)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, color: 'var(--text-muted)', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 4 }}
                     title={t('quiz.delete_topic')}>
                     <Trash2 size={12} />
                   </button>
@@ -575,7 +575,7 @@ function QuestionForm({ editing, topics, defaults, onSave, onClose }) {
         <h3 style={{ margin: 0, fontWeight: 700, fontSize: 15 }}>
           {editing ? t('quiz.edit_question') : t('quiz.new_question')}
         </h3>
-        <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', display: 'flex', padding: 4, borderRadius: 6 }}>
+        <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 4, borderRadius: 6 }}>
           <X size={17} />
         </button>
       </div>
@@ -785,7 +785,7 @@ const topicBtn   = { display: 'flex', alignItems: 'center', gap: 6, width: '100%
 const primaryBtn = { display: 'inline-flex', alignItems: 'center', gap: 6, padding: '9px 18px', borderRadius: 8, border: 'none', background: 'var(--accent)', color: '#fff', fontWeight: 600, fontSize: 13, cursor: 'pointer' }
 const ghostBtn   = { display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 14px', borderRadius: 7, border: '1px solid var(--border)', background: 'transparent', color: 'var(--text)', fontSize: 13, cursor: 'pointer' }
 const dangerBtn  = { display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 14px', borderRadius: 7, border: 'none', background: 'var(--danger)', color: '#fff', fontSize: 13, cursor: 'pointer', fontWeight: 600 }
-const iconBtn    = { background: 'none', border: 'none', cursor: 'pointer', padding: 6, display: 'flex', borderRadius: 6 }
+const iconBtn    = { background: 'none', border: 'none', cursor: 'pointer', padding: 6, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 6 }
 const pageBtn    = { display: 'inline-flex', alignItems: 'center', justifyContent: 'center', padding: '5px 8px', borderRadius: 7, border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text)', fontSize: 13, cursor: 'pointer', minWidth: 32, height: 32 }
 const labelStyle = { fontSize: 11, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block' }
 const inputStyle = (err) => ({ width: '100%', padding: '8px 11px', borderRadius: 7, border: `1.5px solid ${err ? 'var(--danger)' : 'var(--border)'}`, background: 'var(--bg)', color: 'var(--text)', fontSize: 13, outline: 'none', display: 'block', boxSizing: 'border-box' })

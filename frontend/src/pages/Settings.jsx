@@ -660,9 +660,9 @@ function MembersTab({ userRole }) {
 
                   {m.role === 'parent' && (
                     linking === m.id ? (
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
+                      <div className="member-row-action" style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
                         <select value={linkStudent} onChange={e => setLinkStudent(e.target.value)}
-                          style={{ fontSize: 12, padding: '5px 8px', borderRadius: 7, border: '1px solid var(--border)', background: 'var(--bg)', color: 'var(--text)', maxWidth: 140 }}>
+                          style={{ fontSize: 12, padding: '5px 8px', borderRadius: 7, border: '1px solid var(--border)', background: 'var(--bg)', color: 'var(--text)', maxWidth: 140, flex: 1, minWidth: 0 }}>
                           <option value="">{t('settings.pick_student')}</option>
                           {allStudents.map(s => (
                             <option key={s.id} value={s.id}>{s.first_name ? `${s.first_name} ${s.last_name}` : s.username}</option>
@@ -678,7 +678,7 @@ function MembersTab({ userRole }) {
                         </button>
                       </div>
                     ) : (
-                      <button onClick={() => openLink(m.id)}
+                      <button className="member-row-action" onClick={() => openLink(m.id)}
                         style={{
                           display: 'flex', alignItems: 'center', gap: 5, padding: '7px 12px',
                           borderRadius: 9, border: '1px solid rgba(236,72,153,0.25)',
@@ -697,7 +697,7 @@ function MembersTab({ userRole }) {
                   )}
 
                   {m.role === 'teacher' && userRole === 'admin' && (
-                    <button onClick={() => toggleTeacherActive(m)} disabled={togglingActive === m.id}
+                    <button className="member-row-action" onClick={() => toggleTeacherActive(m)} disabled={togglingActive === m.id}
                       title={m.is_active ? t('settings.deactivate_teacher') : t('settings.activate_teacher')}
                       style={{
                         display: 'flex', alignItems: 'center', gap: 5, padding: '7px 12px',
@@ -714,7 +714,7 @@ function MembersTab({ userRole }) {
                   )}
 
                   {canRemove(m) && (
-                    <button onClick={() => removeMember(m)} disabled={removing === m.id}
+                    <button className="member-row-action" onClick={() => removeMember(m)} disabled={removing === m.id}
                       style={{
                         display: 'flex', alignItems: 'center', gap: 5, padding: '7px 12px',
                         borderRadius: 9, border: '1px solid rgba(239,68,68,0.2)',
@@ -1049,7 +1049,7 @@ function InviteRow({ inv, url, onDelete }) {
         background: expired || usedUp ? 'rgba(0,0,0,0.02)' : `${roleDef.color}08`,
         opacity: expired || usedUp ? 0.6 : 1,
       }}>
-      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+      <div className="invite-row" style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
         <div style={{
           width: 36, height: 36, borderRadius: 10, flexShrink: 0,
           background: expired || usedUp ? 'rgba(0,0,0,0.06)' : `${roleDef.color}22`,
@@ -1083,7 +1083,7 @@ function InviteRow({ inv, url, onDelete }) {
             {inv.note && <span style={{ fontStyle: 'italic', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 160 }}>"{inv.note}"</span>}
           </div>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
+        <div className="invite-row-actions" style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
           {!expired && !usedUp && <CopyButton text={url} />}
           {confirm ? (
             <>
@@ -1247,19 +1247,19 @@ export default function Settings() {
       </div>
 
       {/* Tabs */}
-      <div style={{ display: 'flex', gap: 4, marginBottom: 24, background: 'var(--card)', borderRadius: 12, padding: 4, border: '1px solid var(--border)' }}>
+      <div className="settings-tabs" style={{ display: 'flex', gap: 4, marginBottom: 24, background: 'var(--card)', borderRadius: 12, padding: 4, border: '1px solid var(--border)' }}>
         {TABS.map(tab => (
-          <button key={tab.id} onClick={() => setActiveTab(tab.id)}
+          <button key={tab.id} className="settings-tabs-btn" onClick={() => setActiveTab(tab.id)}
             style={{
-              flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7,
-              padding: '9px 0', borderRadius: 9, border: 'none', cursor: 'pointer',
+              flex: 1, minWidth: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7,
+              padding: '9px 4px', borderRadius: 9, border: 'none', cursor: 'pointer',
               background: activeTab === tab.id ? `linear-gradient(135deg, ${color}, ${color}cc)` : 'transparent',
               color: activeTab === tab.id ? '#fff' : 'var(--text-muted)',
               fontWeight: 700, fontSize: 13, transition: 'all 0.2s',
               boxShadow: activeTab === tab.id ? `0 2px 10px ${color}44` : 'none',
             }}>
-            <tab.icon size={14} />
-            {t(`settings.tab_${tab.id}`)}
+            <tab.icon size={14} style={{ flexShrink: 0 }} />
+            <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t(`settings.tab_${tab.id}`)}</span>
           </button>
         ))}
       </div>

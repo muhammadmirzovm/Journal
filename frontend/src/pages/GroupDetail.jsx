@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useParams, Link, useNavigate, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
-import { Users, BookOpen, Plus, Key, Copy, Check, Calendar, Clock, Loader2, ChevronLeft, ChevronRight, Trash2, Pencil, Crown, CopyPlus, Send, UserCheck, UserPlus, Search, FileDown, UserCog, MoreVertical, GraduationCap, CheckCircle2 } from 'lucide-react'
+import { Users, BookOpen, Plus, Key, Copy, Check, Calendar, Loader2, ChevronLeft, ChevronRight, Trash2, Pencil, Crown, CopyPlus, Send, UserCheck, UserPlus, Search, FileDown, UserCog, MoreVertical, GraduationCap, CheckCircle2, Info } from 'lucide-react'
 import {
   getGroup, getMembers, getLessons, createLesson, updateLesson, deleteLesson,
   updateGroup, deleteGroup, updateMembership, removeMember,
@@ -150,6 +150,7 @@ export default function GroupDetail() {
 
   const [showAddLesson,     setShowAddLesson]     = useState(false)
   const [showEditGroup,     setShowEditGroup]      = useState(false)
+  const [showDetails,       setShowDetails]        = useState(false)
   const [showDeleteGroup,   setShowDeleteGroup]    = useState(false)
   const [editingLesson,     setEditingLesson]      = useState(null)
   const [editingMembership, setEditingMembership] = useState(null)
@@ -331,59 +332,25 @@ export default function GroupDetail() {
             )
           })()}
           <div style={{ display: 'flex', alignItems: 'center', gap: 16, fontSize: 13, color: 'var(--text-muted)', flexWrap: 'wrap' }}>
-            {group.teacher_name && (
-              isAdmin ? (
-                <Link to={`/profile/${group.teacher}`} style={{ display: 'flex', alignItems: 'center', gap: 5, color: 'var(--accent)', textDecoration: 'none', fontWeight: 600 }}>
-                  <GraduationCap size={14} />{group.teacher_name}
-                </Link>
-              ) : (
-                <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}><GraduationCap size={14} />{group.teacher_name}</span>
-              )
-            )}
             {!group.is_individual && <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}><Users size={14} />{members.length} {t('group_detail.students_count')}</span>}
-            <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}><BookOpen size={14} />{lessonTotal} {t('group_detail.lessons_count')}</span>
-            {(group.class_days?.length > 0 || group.class_time) && (
-              <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                <Clock size={14} />
-                {group.class_days?.length > 0
-                  ? group.class_days.map(d => ['Mo','Tu','We','Th','Fr','Sa','Su'][d]).join(', ')
-                  : ''}
-                {group.class_days?.length > 0 && group.class_time && ' — '}
-                {group.class_time ? group.class_time.replace('-', ' — ') : ''}
-              </span>
-            )}
-            <span style={{ display: 'flex', alignItems: 'center', gap: 5,
-              color: group.telegram_chat_id ? '#0EA5E9' : 'var(--text-muted)',
-              background: group.telegram_chat_id ? 'rgba(14,165,233,0.1)' : 'rgba(0,0,0,0.04)',
-              borderRadius: 6, padding: '2px 8px', fontSize: 12 }}>
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
-              {group.telegram_chat_id ? t('group_detail.tg_linked') : t('group_detail.tg_not_linked')}
-            </span>
           </div>
         </div>
         <div className="group-detail-hd-btns" style={{ display: 'flex', flexWrap: 'wrap', gap: 10, alignItems: 'center' }}>
           {isTeacher && (
             <>
-              {!isReadOnly && !group.is_individual && (
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 10, padding: '10px 16px' }}>
-                  <Key size={14} color="var(--accent)" />
-                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: 15, letterSpacing: '0.12em', fontWeight: 600 }}>{group.join_key}</span>
-                  <motion.button whileTap={{ scale: 0.9 }} onClick={copy} title={copied ? t('group_detail.copied') : t('group_detail.copy_key')}
-                    style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, color: copied ? 'var(--success)' : 'var(--text-muted)', padding: 0 }}>
-                    {copied ? <Check size={14} /> : <Copy size={14} />}
-                    <span className="hd-btn-label">{copied ? t('group_detail.copied') : t('group_detail.copy_key')}</span>
-                  </motion.button>
-                </div>
-              )}
+              <button className="hd-icon-btn" onClick={() => setShowDetails(true)} title={t('group_detail.details')}
+                style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 10, padding: '10px 16px', cursor: 'pointer', fontSize: 13, color: 'var(--text)' }}>
+                <Info size={14} color="var(--accent)" /> <span className="hd-btn-label">{t('group_detail.details')}</span>
+              </button>
               {!isReadOnly && group.is_individual && members.length === 0 && (
                 <motion.button whileHover={{ translateY: -1 }} whileTap={{ scale: 0.97 }} onClick={() => setShowAddStudent(true)} style={primaryBtn}>
                   <UserPlus size={13} /> {t('group_detail.add_student')}
                 </motion.button>
               )}
-              <button onClick={() => setShowEditGroup(true)} title={t('group_detail.edit_group')} style={ghostBtn}><Pencil size={13} /> <span className="hd-btn-label">{t('group_detail.edit_group')}</span></button>
+              <button className="hd-icon-btn" onClick={() => setShowEditGroup(true)} title={t('group_detail.edit_group')} style={ghostBtn}><Pencil size={13} /> <span className="hd-btn-label">{t('group_detail.edit_group')}</span></button>
 
               {/* Secondary actions dropdown */}
-              <div ref={actionsRef} style={{ position: 'relative' }}>
+              <div ref={actionsRef} className="hd-icon-btn" style={{ position: 'relative' }}>
                 <button onClick={() => setShowActions(o => !o)} title={t('group_detail.more_actions')}
                   style={{ ...iconActionBtn, width: 36, height: 36, justifyContent: 'center', border: '1px solid var(--border)', borderRadius: 10 }}>
                   <MoreVertical size={16} color="var(--text-muted)" />
@@ -392,7 +359,8 @@ export default function GroupDetail() {
                   {showActions && (
                     <motion.div initial={{ opacity: 0, y: -6, scale: 0.96 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: -6, scale: 0.96 }}
                       transition={{ duration: 0.15 }}
-                      style={{ position: 'absolute', right: 0, top: 'calc(100% + 8px)', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 10, overflow: 'hidden', minWidth: 210, boxShadow: '0 12px 32px rgba(0,0,0,0.18)', zIndex: 50 }}>
+                      className="hd-dropdown"
+                      style={{ position: 'absolute', right: 0, top: 'calc(100% + 8px)', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 10, overflow: 'hidden', width: 210, maxWidth: 'calc(100vw - 32px)', boxShadow: '0 12px 32px rgba(0,0,0,0.18)', zIndex: 50 }}>
                       {isAdmin && (
                         <button onClick={() => { setShowActions(false); openChangeTeacher() }} style={menuItemStyle('#8B5CF6')}>
                           <UserCog size={14} /> O'qituvchi
@@ -557,6 +525,55 @@ export default function GroupDetail() {
       <AddStudentModal open={showAddStudent} onClose={() => setShowAddStudent(false)} groupId={id}
         onAdded={m => { setMembers(ms => [...ms, m]); show(t('group_detail.toast_student_added'), 'success') }} />
 
+      {/* Group details modal — teacher, schedule, Telegram status, join key */}
+      <Modal open={showDetails} onClose={() => setShowDetails(false)} title={t('group_detail.details_modal_title')}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+          {group.teacher_name && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <GraduationCap size={16} color="var(--text-muted)" />
+              <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>{t('group_detail.teacher_label')}:</span>
+              {isAdmin ? (
+                <Link to={`/profile/${group.teacher}`} style={{ color: 'var(--accent)', textDecoration: 'none', fontWeight: 600, fontSize: 13 }}>{group.teacher_name}</Link>
+              ) : (
+                <span style={{ fontWeight: 600, fontSize: 13 }}>{group.teacher_name}</span>
+              )}
+            </div>
+          )}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <BookOpen size={16} color="var(--text-muted)" />
+            <span style={{ fontSize: 13 }}>{lessonTotal} {t('group_detail.lessons_count')}</span>
+          </div>
+          {(group.class_days?.length > 0 || group.class_time) && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <Calendar size={16} color="var(--text-muted)" />
+              <span style={{ fontSize: 13 }}>
+                {group.class_days?.length > 0 ? group.class_days.map(d => ['Mo','Tu','We','Th','Fr','Sa','Su'][d]).join(', ') : ''}
+                {group.class_days?.length > 0 && group.class_time && ' — '}
+                {group.class_time ? group.class_time.replace('-', ' — ') : ''}
+              </span>
+            </div>
+          )}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10,
+            color: group.telegram_chat_id ? '#0EA5E9' : 'var(--text-muted)' }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
+            <span style={{ fontSize: 13 }}>{group.telegram_chat_id ? t('group_detail.tg_linked') : t('group_detail.tg_not_linked')}</span>
+          </div>
+          {!isReadOnly && !group.is_individual && (
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: 10, padding: '10px 16px', marginTop: 4 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <Key size={14} color="var(--accent)" />
+                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 15, letterSpacing: '0.12em', fontWeight: 600 }}>{group.join_key}</span>
+              </div>
+              <motion.button whileTap={{ scale: 0.9 }} onClick={copy}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, color: copied ? 'var(--success)' : 'var(--text-muted)', padding: 0 }}>
+                {copied ? <Check size={14} /> : <Copy size={14} />}
+                {copied ? t('group_detail.copied') : t('group_detail.copy_key')}
+              </motion.button>
+            </div>
+          )}
+        </div>
+      </Modal>
+
       {/* Change Teacher modal (admin only) */}
       <Modal open={showChangeTeacher} onClose={() => setShowChangeTeacher(false)} title="Guruh o'qituvchisini o'zgartirish">
         {teachersList.length > 6 && (
@@ -667,68 +684,67 @@ function MemberRow({ member: m, index, isTeacher, onEditJoinDate, onRemove }) {
   return (
     <motion.div initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: index * 0.04 }}
       style={{ background: 'var(--surface)', border: `1px solid ${isFirst ? 'rgba(245,158,11,0.4)' : 'var(--border)'}`, borderRadius: 10, padding: '12px 16px' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
-        {/* Rank badge */}
-        <div style={{ width: 22, textAlign: 'center', flexShrink: 0 }}>
-          {m.rank <= 3 ? (
-            <span style={{ fontSize: 13, fontWeight: 800, color: PODIUM_COLORS[m.rank]?.text || 'var(--text-muted)' }}>
-              {m.rank === 1 ? '1st' : m.rank === 2 ? '2nd' : '3rd'}
-            </span>
-          ) : (
-            <span style={{ fontSize: 12, color: 'var(--text-muted)', fontWeight: 600 }}>{m.rank}</span>
-          )}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        {/* Avatar, with rank as a corner badge — a leaderboard detail on the
+            student's identity, not a property of the list row itself */}
+        <div style={{ position: 'relative', flexShrink: 0 }}>
+          <div style={{ width: 36, height: 36, borderRadius: '50%', background: isFirst ? 'rgba(245,158,11,0.12)' : 'var(--accent-bg)', border: `1.5px solid ${isFirst ? '#F59E0B' : 'var(--accent)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: 14, color: isFirst ? '#F59E0B' : 'var(--accent)' }}>
+            {(m.first_name?.[0] || m.username?.[0] || '?').toUpperCase()}
+          </div>
+          <span style={{
+            position: 'absolute', top: -6, left: -6, minWidth: 16, height: 16, padding: '0 3px',
+            borderRadius: 99, background: PODIUM_COLORS[m.rank]?.text || 'var(--text-muted)',
+            color: '#fff', fontSize: 9, fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center',
+            border: '2px solid var(--surface)', lineHeight: 1,
+          }}>
+            {m.rank}
+          </span>
         </div>
 
-        {/* Avatar */}
-        <div style={{ width: 36, height: 36, borderRadius: '50%', background: isFirst ? 'rgba(245,158,11,0.12)' : 'var(--accent-bg)', border: `1.5px solid ${isFirst ? '#F59E0B' : 'var(--accent)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: 14, color: isFirst ? '#F59E0B' : 'var(--accent)', flexShrink: 0 }}>
-          {(m.first_name?.[0] || m.username?.[0] || '?').toUpperCase()}
-        </div>
-
-        {/* Name */}
-        <div style={{ flex: 1, minWidth: 80 }}>
-          <Link to={`/profile/${m.id}`} style={{ fontWeight: 600, fontSize: 14, textDecoration: 'none', color: 'var(--text)' }}>
+        {/* Name + comprehension */}
+        <div style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 8 }}>
+          <Link to={`/profile/${m.id}`} style={{ fontWeight: 600, fontSize: 14, textDecoration: 'none', color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
             {m.first_name} {m.last_name}
           </Link>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 1, flexWrap: 'wrap' }}>
-            <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>
-              {formatShortDayMonthYear(m.joined_at, i18n.language)}
-            </span>
-            {isTeacher && <button onClick={onEditJoinDate} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', color: 'var(--text-muted)' }}><Pencil size={11} /></button>}
-            <span title={m.has_parent ? t('group_detail.badge_has_parent') : t('group_detail.badge_no_parent')}
-              style={{ display: 'inline-flex', alignItems: 'center', gap: 2, padding: '1px 5px', borderRadius: 4, fontSize: 10, fontWeight: 600,
-                background: m.has_parent ? 'rgba(20,184,168,0.12)' : 'rgba(148,163,184,0.08)',
-                color: m.has_parent ? '#14B8A6' : 'var(--text-muted)' }}>
-              <UserCheck size={9} />{m.has_parent ? t('group_detail.badge_has_parent') : t('group_detail.badge_no_parent')}
-            </span>
-            <span title={m.student_telegram ? t('group_detail.badge_tg_yes') : t('group_detail.badge_tg_no')}
-              style={{ display: 'inline-flex', alignItems: 'center', gap: 2, padding: '1px 5px', borderRadius: 4, fontSize: 10, fontWeight: 600,
-                background: m.student_telegram ? 'rgba(99,102,241,0.1)' : 'rgba(148,163,184,0.08)',
-                color: m.student_telegram ? '#6366F1' : 'var(--text-muted)' }}>
-              <Send size={9} />TG
-            </span>
-          </div>
+          {pct !== null ? <span style={{ fontSize: 15, fontWeight: 700, color, flexShrink: 0 }}>{pct}%</span>
+            : <span style={{ fontSize: 11, color: 'var(--text-muted)', flexShrink: 0 }}>{t('group_detail.no_scores')}</span>}
         </div>
+      </div>
 
-        {/* Comprehension */}
-        <div style={{ textAlign: 'right', flexShrink: 0, minWidth: 52 }}>
-          {pct !== null ? <span style={{ fontSize: 15, fontWeight: 700, color }}>{pct}%</span>
-            : <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>{t('group_detail.no_scores')}</span>}
-          <p style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 1 }}>{t('group_detail.comprehension')}</p>
-        </div>
+      {/* Meta: date/edit + remove on one line, status badges on their own line below */}
+      <div style={{ paddingLeft: 48, marginTop: 8 }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
+          <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, color: 'var(--text-muted)' }}>
+            {formatShortDayMonthYear(m.joined_at, i18n.language)}
+            {isTeacher && <button onClick={onEditJoinDate} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)' }}><Pencil size={11} /></button>}
+          </span>
 
-        {/* Remove */}
-        {isTeacher && (
-          <div style={{ flexShrink: 0 }}>
-            {confirm ? (
-              <div style={{ display: 'flex', gap: 4 }}>
+          {isTeacher && (
+            confirm ? (
+              <div style={{ display: 'flex', gap: 4, flexShrink: 0 }}>
                 <button onClick={onRemove} style={{ ...dangerBtn, padding: '4px 10px', fontSize: 12 }}>{t('group_detail.remove_student')}</button>
                 <button onClick={() => setConfirm(false)} style={{ ...ghostBtn, padding: '4px 10px', fontSize: 12 }}>{t('group_detail.cancel')}</button>
               </div>
             ) : (
-              <button onClick={() => setConfirm(true)} style={iconActionBtn}><Trash2 size={14} color="var(--text-muted)" /></button>
-            )}
-          </div>
-        )}
+              <button onClick={() => setConfirm(true)} style={{ ...iconActionBtn, flexShrink: 0 }}><Trash2 size={14} color="var(--text-muted)" /></button>
+            )
+          )}
+        </div>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap', marginTop: 6 }}>
+          <span title={m.has_parent ? t('group_detail.badge_has_parent') : t('group_detail.badge_no_parent')}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: 2, padding: '1px 5px', borderRadius: 4, fontSize: 10, fontWeight: 600,
+              background: m.has_parent ? 'rgba(20,184,168,0.12)' : 'rgba(148,163,184,0.08)',
+              color: m.has_parent ? '#14B8A6' : 'var(--text-muted)' }}>
+            <UserCheck size={9} />{m.has_parent ? t('group_detail.badge_has_parent') : t('group_detail.badge_no_parent')}
+          </span>
+          <span title={m.student_telegram ? t('group_detail.badge_tg_yes') : t('group_detail.badge_tg_no')}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: 2, padding: '1px 5px', borderRadius: 4, fontSize: 10, fontWeight: 600,
+              background: m.student_telegram ? 'rgba(99,102,241,0.1)' : 'rgba(148,163,184,0.08)',
+              color: m.student_telegram ? '#6366F1' : 'var(--text-muted)' }}>
+            <Send size={9} />TG
+          </span>
+        </div>
       </div>
 
       {/* Progress bar */}
@@ -1408,8 +1424,8 @@ const primaryBtn       = { display: 'inline-flex', alignItems: 'center', gap: 6,
 const ghostBtn         = { display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 14px', borderRadius: 7, border: '1px solid var(--border)', background: 'transparent', color: 'var(--text)', fontSize: 13, cursor: 'pointer' }
 const dangerBtn        = { display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 14px', borderRadius: 7, border: 'none', background: 'var(--danger)', color: '#fff', fontSize: 13, cursor: 'pointer', fontWeight: 600 }
 const dangerOutlineBtn = { display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 14px', borderRadius: 7, border: '1px solid var(--danger)', background: 'transparent', color: 'var(--danger)', fontSize: 13, cursor: 'pointer', fontWeight: 600 }
-const iconActionBtn    = { background: 'none', border: 'none', cursor: 'pointer', padding: 6, display: 'flex', borderRadius: 6 }
-const menuItemStyle    = (color) => ({ display: 'flex', alignItems: 'center', gap: 9, width: '100%', padding: '10px 14px', border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 13, fontWeight: 600, color, textAlign: 'left', whiteSpace: 'nowrap' })
+const iconActionBtn    = { background: 'none', border: 'none', cursor: 'pointer', padding: 6, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 6 }
+const menuItemStyle    = (color) => ({ display: 'flex', alignItems: 'center', gap: 9, width: '100%', padding: '10px 14px', border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 13, fontWeight: 600, color, textAlign: 'left' })
 const labelStyle       = { fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block' }
 const errorStyle       = { fontSize: 12, color: 'var(--danger)', marginTop: 4 }
 const inputStyle       = (hasError) => ({ width: '100%', padding: '9px 12px', borderRadius: 7, border: `1.5px solid ${hasError ? 'var(--danger)' : 'var(--border)'}`, background: 'var(--bg)', color: 'var(--text)', fontSize: 14, outline: 'none', fontFamily: 'var(--font-body)', display: 'block' })
