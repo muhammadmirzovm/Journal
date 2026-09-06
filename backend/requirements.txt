@@ -7,8 +7,12 @@ PyJWT==2.12.1
 sqlparse==0.5.5
 asgiref==3.11.1
 
-# Production ASGI server
+# Production ASGI server (docker-compose/Oracle path)
 daphne==4.1.2
+
+# Production WSGI server (Railway path — no WebSocket consumers are used,
+# so plain WSGI is simpler and Railway's healthcheck story is more standard)
+gunicorn==23.0.0
 
 # Production
 whitenoise[brotli]==6.8.2

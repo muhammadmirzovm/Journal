@@ -11,7 +11,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # ── Security ──────────────────────────────────────────────────────────────────
 SECRET_KEY               = os.environ.get('SECRET_KEY', 'django-insecure-eagy6i18qj6t37kgub_r=g+&i3s_fx$rywr@fk%oup_$s#ql_!')
 DEBUG                    = os.environ.get('DEBUG', 'true').lower() == 'true'
-ALLOWED_HOSTS            = os.environ.get('ALLOWED_HOSTS', '*').split(',')
+# Railway assigns each service a public subdomain at deploy time and exposes
+# it via this variable — fold it in automatically so ALLOWED_HOSTS/CORS/CSRF
+# don't need updating by hand whenever that subdomain changes.
+RAILWAY_PUBLIC_DOMAIN    = os.environ.get('RAILWAY_PUBLIC_DOMAIN', '')
+ALLOWED_HOSTS            = [h for h in os.environ.get('ALLOWED_HOSTS', '*').split(',') if h]
+if RAILWAY_PUBLIC_DOMAIN and RAILWAY_PUBLIC_DOMAIN not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append(RAILWAY_PUBLIC_DOMAIN)
 TELEGRAM_BOT_TOKEN       = os.environ.get('TELEGRAM_BOT_TOKEN', '')
 TELEGRAM_WEBHOOK_SECRET  = os.environ.get('TELEGRAM_WEBHOOK_SECRET', '')
 VAPID_PRIVATE_KEY        = os.environ.get('VAPID_PRIVATE_KEY', '')
@@ -142,6 +148,8 @@ _cors_origins = os.environ.get(
     'http://localhost:5173,http://127.0.0.1:5173'
 )
 CORS_ALLOWED_ORIGINS = [o.strip() for o in _cors_origins.split(',') if o.strip()]
+if RAILWAY_PUBLIC_DOMAIN:
+    CORS_ALLOWED_ORIGINS.append(f'https://{RAILWAY_PUBLIC_DOMAIN}')
 CORS_ALLOW_CREDENTIALS = True
 
 # ── CSRF ──────────────────────────────────────────────────────────────────────
@@ -150,6 +158,8 @@ _csrf_origins = os.environ.get(
     'http://localhost:5173,http://127.0.0.1:5173'
 )
 CSRF_TRUSTED_ORIGINS = [o.strip() for o in _csrf_origins.split(',') if o.strip()]
+if RAILWAY_PUBLIC_DOMAIN:
+    CSRF_TRUSTED_ORIGINS.append(f'https://{RAILWAY_PUBLIC_DOMAIN}')
 
 # ── Static & Media ────────────────────────────────────────────────────────────
 STATIC_URL  = '/static/'

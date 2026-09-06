@@ -1,4 +1,4 @@
-name: CI/CD
+name: CI
 
 on:
   push:
@@ -47,22 +47,8 @@ jobs:
         run: pytest users/tests.py groups/tests.py rewards/tests.py coins/tests.py games/tests.py purchases/tests.py quiz/tests.py academies/tests.py -v
         working-directory: backend
 
-  deploy:
-    name: Deploy to server
-    runs-on: ubuntu-latest
-    needs: test
-    if: github.ref == 'refs/heads/main'
-
-    steps:
-      - name: Deploy over SSH
-        uses: appleboy/ssh-action@v1.2.0
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_KEY }}
-          port: 22
-          script_stop: true
-          command_timeout: 20m
-          script: |
-            cd /home/ubuntu/Journal
-            bash deploy/deploy.sh
+# Deployment itself is handled by Railway's native GitHub integration — it
+# watches this repo directly and rebuilds backend/ and frontend/ on every
+# push to main, no SSH step needed here. (The old Oracle/SSH deploy job
+# lived here; removed since that server is no longer the deploy target —
+# see DEPLOY.md's Oracle section if that path is ever revived.)

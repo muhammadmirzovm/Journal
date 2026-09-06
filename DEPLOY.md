@@ -107,3 +107,40 @@ Set `TELEGRAM_BOT_TOKEN` (+ a `TELEGRAM_WEBHOOK_SECRET`) and generate VAPID
 keys in `.env`, `docker compose up -d`, then
 `docker compose exec backend python manage.py set_telegram_webhook`
 (webhook host = `https://<API_DOMAIN>`).
+
+## Railway (managed alternative — no server to maintain)
+
+Instead of a VM you self-administer, Railway builds straight from this repo
+and runs a managed Postgres — no SSH, no Docker Compose, no OS to patch.
+Local development (`docker-compose.yml`, `deploy/*`) is untouched by this;
+it's a second, independent deployment target.
+
+**Setup, once:**
+1. Railway dashboard → **New Project** → **Deploy from GitHub repo** → this repo.
+2. **+ New → Database → PostgreSQL** — Railway injects `DATABASE_URL` into
+   every other service in the project automatically.
+3. Add a **backend** service: Root Directory `backend/` (Railway finds
+   `backend/Dockerfile` and `backend/railway.json` automatically).
+4. Add a **frontend** service: Root Directory `frontend/` (finds
+   `frontend/Dockerfile` and `frontend/railway.json`).
+5. Under each service's **Settings → Networking**, click **Generate Domain**
+   to get its `*.up.railway.app` URL.
+
+**Environment variables** (Service → Variables tab — see `.env.example`'s
+Railway section for the full list):
+
+| Service | Variable | Value |
+|---|---|---|
+| backend | `SECRET_KEY` | long random string |
+| backend | `DEBUG` | `false` |
+| backend | `CORS_ALLOWED_ORIGINS` | `https://<frontend domain>` |
+| backend | `CSRF_TRUSTED_ORIGINS` | `https://<frontend domain>` |
+| frontend | `VITE_API_URL` *(build-time)* | `https://<backend domain>/api` |
+
+`DATABASE_URL` and `ALLOWED_HOSTS` need no manual setup — the former comes
+from the Postgres plugin, the latter from `RAILWAY_PUBLIC_DOMAIN`, which
+`backend/backend/settings.py` reads automatically.
+
+**Custom domain:** Service → Settings → Networking → **Custom Domain** →
+enter `journaly.uz` (or `api.journaly.uz` for the backend service) → Railway
+gives a CNAME target → add that CNAME in your domain's DNS panel (aHost).
