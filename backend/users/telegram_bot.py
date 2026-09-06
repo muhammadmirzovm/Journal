@@ -3,7 +3,9 @@ Telegram bot for Journaly — webhook mode.
 """
 
 import os
+import asyncio
 import logging
+import threading
 from datetime import date as date_cls, timedelta
 from asgiref.sync import sync_to_async
 from django.utils import timezone
@@ -1466,13 +1468,47 @@ async def dailyreport_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 _application = None
 
+# The PTB Application's Bot lazily creates an httpx.AsyncClient bound to
+# whichever asyncio event loop is running when it first makes a request.
+# asgiref's async_to_sync() spins up (and tears down) a brand new event loop
+# on every top-level call from sync code, so a cached Application whose
+# client was created under one async_to_sync() call breaks ("Event loop is
+# closed") the moment a later, independent async_to_sync() call tries to use
+# it. Fix: run the Application on a single event loop that lives for the
+# whole worker process, in a dedicated background thread.
+_loop = None
+_loop_thread = None
+_loop_ready = threading.Event()
+
+
+def _run_loop_forever():
+    global _loop
+    _loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(_loop)
+    _loop_ready.set()
+    _loop.run_forever()
+
+
+def _get_loop():
+    global _loop_thread
+    if _loop_thread is None or not _loop_thread.is_alive():
+        _loop_ready.clear()
+        _loop_thread = threading.Thread(target=_run_loop_forever, daemon=True)
+        _loop_thread.start()
+        _loop_ready.wait()
+    return _loop
+
+
+def run_coroutine(coro, timeout=30):
+    """Run `coro` on the persistent bot event loop and block for the result."""
+    loop = _get_loop()
+    return asyncio.run_coroutine_threadsafe(coro, loop).result(timeout=timeout)
+
 
 def get_application():
     global _application
     if _application is not None:
         return _application
-
-    from asgiref.sync import async_to_sync
 
     bot_token = os.environ.get('TELEGRAM_BOT_TOKEN')
     if not bot_token:
@@ -1506,7 +1542,7 @@ def get_application():
     app.add_handler(CallbackQueryHandler(holiday_confirm_callback, pattern=r'^hol_confirm$'))
     app.add_handler(CallbackQueryHandler(holiday_cancel_callback,  pattern=r'^hol_cancel$'))
 
-    async_to_sync(app.initialize)()
+    run_coroutine(app.initialize())
 
     async def _set_commands():
         from telegram import BotCommandScopeAllGroupChats
@@ -1521,7 +1557,7 @@ def get_application():
             BotCommand('dailyreport', "Kunlik hisobot / Ежедневный отчёт"),
         ], scope=BotCommandScopeAllGroupChats())
     try:
-        async_to_sync(_set_commands)()
+        run_coroutine(_set_commands())
     except Exception as e:
         logger.warning('Could not set bot commands: %s', e)
 

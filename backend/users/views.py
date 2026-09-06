@@ -952,11 +952,11 @@ class TelegramWebhookView(APIView):
 
         try:
             data = request.data
-            from users.telegram_bot import get_application
+            from users.telegram_bot import get_application, run_coroutine
             from telegram import Update
             app = get_application()
             update = Update.de_json(data, app.bot)
-            async_to_sync(app.process_update)(update)
+            run_coroutine(app.process_update(update))
         except Exception as e:
             logger.error('Telegram webhook error: %s', e, exc_info=True)
 
