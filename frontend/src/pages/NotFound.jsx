@@ -1,10 +1,23 @@
+import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import { Home, ArrowLeft } from 'lucide-react'
+import { useDocumentMeta } from '../hooks/useDocumentMeta'
 
 export default function NotFound() {
   const { t } = useTranslation()
+  useDocumentMeta(t('meta.not_found_title'))
+
+  // 404s shouldn't be indexed — override index.html's default robots tag
+  // while this page is mounted, restore it on unmount.
+  useEffect(() => {
+    const tag = document.querySelector('meta[name="robots"]')
+    const prev = tag?.getAttribute('content') ?? null
+    if (tag) tag.setAttribute('content', 'noindex, nofollow')
+    return () => { if (tag && prev !== null) tag.setAttribute('content', prev) }
+  }, [])
+
   return (
     <div style={{ minHeight: '72vh', display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>

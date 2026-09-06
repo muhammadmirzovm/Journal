@@ -6,12 +6,14 @@ import { Eye, EyeOff, Code2, Loader2, ArrowRight } from 'lucide-react'
 import api from '../api/axios'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
+import { useDocumentMeta } from '../hooks/useDocumentMeta'
 
 export default function Login() {
   const navigate = useNavigate()
   const { login } = useAuth()
   const { show } = useToast()
   const { t } = useTranslation()
+  useDocumentMeta(t('meta.login_title'), t('meta.login_description'))
 
   const [showPass, setShowPass] = useState(false)
   const [loading, setLoading]   = useState(false)

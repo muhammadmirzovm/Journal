@@ -1,4 +1,13 @@
 {
+  "meta": {
+    "login_title": "Log in — Journaly",
+    "login_description": "Log in to your Journaly account to manage attendance, grades and your classroom journal.",
+    "register_title": "Sign up — Journaly",
+    "register_description": "Sign up for Journaly for free — an attendance, grades and gamified classroom platform for teachers and students.",
+    "forgot_title": "Reset password — Journaly",
+    "forgot_description": "Reset your Journaly account password using a code sent to your Telegram.",
+    "not_found_title": "Page not found — Journaly"
+  },
   "nav": {
     "dashboard": "Dashboard",
     "groups": "Groups",

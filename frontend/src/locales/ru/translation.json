@@ -1,4 +1,13 @@
 {
+  "meta": {
+    "login_title": "Вход — Journaly",
+    "login_description": "Войдите в свой аккаунт Journaly и управляйте посещаемостью, оценками и учебным журналом.",
+    "register_title": "Регистрация — Journaly",
+    "register_description": "Бесплатная регистрация в Journaly — платформа для учителей и учеников с посещаемостью, баллами и геймификацией класса.",
+    "forgot_title": "Восстановление пароля — Journaly",
+    "forgot_description": "Восстановите пароль от аккаунта Journaly с помощью кода, отправленного в Telegram.",
+    "not_found_title": "Страница не найдена — Journaly"
+  },
   "nav": {
     "dashboard": "Панель",
     "groups": "Группы",

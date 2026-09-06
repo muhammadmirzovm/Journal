@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import { Send, KeyRound, CheckCircle2, Loader2, ArrowLeft, Eye, EyeOff } from 'lucide-react'
 import { passwordResetRequest, passwordResetConfirm } from '../api/users'
+import { useDocumentMeta } from '../hooks/useDocumentMeta'
 
 const inputStyle = (hasErr) => ({
   width: '100%', padding: '13px 16px', borderRadius: 12, boxSizing: 'border-box',
@@ -35,6 +36,7 @@ function PasswordInput({ value, onChange, placeholder, autoComplete }) {
 export default function ForgotPassword() {
   const navigate = useNavigate()
   const { t } = useTranslation()
+  useDocumentMeta(t('meta.forgot_title'), t('meta.forgot_description'))
 
   const [step, setStep]               = useState(1)
   const [username, setUsername]       = useState('')

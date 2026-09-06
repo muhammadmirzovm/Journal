@@ -2,9 +2,11 @@ import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import { GraduationCap, Lock, LogIn } from 'lucide-react'
+import { useDocumentMeta } from '../hooks/useDocumentMeta'
 
 export default function Register() {
   const { t } = useTranslation()
+  useDocumentMeta(t('meta.register_title'), t('meta.register_description'))
 
   return (
     <div style={{

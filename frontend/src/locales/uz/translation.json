@@ -1,4 +1,13 @@
 {
+  "meta": {
+    "login_title": "Kirish — Journaly",
+    "login_description": "Journaly hisobingizga kiring va davomat, baholar hamda o'quv kundaligingizni boshqaring.",
+    "register_title": "Ro'yxatdan o'tish — Journaly",
+    "register_description": "Journaly'da bepul ro'yxatdan o'ting — o'qituvchilar va o'quvchilar uchun davomat, ball va gamifikatsiyalangan sinf platformasi.",
+    "forgot_title": "Parolni tiklash — Journaly",
+    "forgot_description": "Journaly hisobingiz parolini Telegram orqali yuboriladigan kod yordamida tiklang.",
+    "not_found_title": "Sahifa topilmadi — Journaly"
+  },
   "nav": {
     "dashboard": "Boshqaruv paneli",
     "groups": "Guruhlar",
