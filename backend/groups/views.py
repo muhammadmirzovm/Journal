@@ -38,11 +38,12 @@ class GroupListCreateView(generics.ListCreateAPIView):
 
     def get_queryset(self):
         user = self.request.user
+        qs = Group.objects.select_related('tuition__template')
         if user.role == 'admin':
-            return Group.objects.filter(teacher__academy=user.academy)
+            return qs.filter(teacher__academy=user.academy)
         if user.role == 'teacher':
-            return Group.objects.filter(teacher=user)
-        return Group.objects.filter(memberships__student=user)
+            return qs.filter(teacher=user)
+        return qs.filter(memberships__student=user)
 
     def perform_create(self, serializer):
         serializer.save(teacher=self.request.user)
@@ -387,10 +388,11 @@ class MembershipDetailView(APIView):
             from datetime import datetime, time as time_
             try:
                 d = datetime.strptime(str(joined_at)[:10], '%Y-%m-%d')
-                GroupMembership.objects.filter(pk=member_pk).update(
-                    joined_at=datetime.combine(d.date(), time_.min)
-                )
-                membership.refresh_from_db()
+                # .save() rather than a queryset .update() — this fires the
+                # post_save signal payments/signals.py listens on to keep its
+                # own Enrollment.started_at in sync with a corrected join date.
+                membership.joined_at = datetime.combine(d.date(), time_.min)
+                membership.save(update_fields=['joined_at'])
                 # Remove attendance records for lessons before the new join date
                 Attendance.objects.filter(
                     lesson__group=group,

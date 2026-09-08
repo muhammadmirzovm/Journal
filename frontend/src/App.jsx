@@ -25,6 +25,9 @@ import Exams from './pages/Exams'
 import Rewards from './pages/Rewards'
 import CoinReport from './pages/CoinReport'
 import PurchaseScanner from './pages/PurchaseScanner'
+import Payments from './pages/Payments'
+import GroupPayments from './pages/GroupPayments'
+import MyPayments from './pages/MyPayments'
 
 function AppShell() {
   const { loading } = useAuth()
@@ -60,6 +63,9 @@ function AppShell() {
             <Route path="/exams"             element={<ProtectedRoute><Exams /></ProtectedRoute>} />
             <Route path="/rewards"           element={<ProtectedRoute><Rewards /></ProtectedRoute>} />
             <Route path="/coins/report"      element={<ProtectedRoute roles={['admin']}><CoinReport /></ProtectedRoute>} />
+            <Route path="/payments"          element={<ProtectedRoute roles={['admin']}><Payments /></ProtectedRoute>} />
+            <Route path="/payments/groups/:groupId" element={<ProtectedRoute roles={['admin']}><GroupPayments /></ProtectedRoute>} />
+            <Route path="/my-payments"       element={<ProtectedRoute roles={['student','parent']}><MyPayments /></ProtectedRoute>} />
             <Route path="/scanner"           element={<ProtectedRoute roles={['admin']}><PurchaseScanner /></ProtectedRoute>} />
             <Route path="*"                  element={<NotFound />} />
           </Routes>

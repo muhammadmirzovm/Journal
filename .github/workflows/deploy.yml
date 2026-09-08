@@ -44,7 +44,7 @@ jobs:
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/test_db
           SECRET_KEY: ci-secret-key
           DEBUG: 'true'
-        run: pytest users/tests.py groups/tests.py rewards/tests.py coins/tests.py games/tests.py purchases/tests.py quiz/tests.py academies/tests.py -v
+        run: pytest users/tests.py groups/tests.py rewards/tests.py coins/tests.py games/tests.py purchases/tests.py quiz/tests.py academies/tests.py payments/tests.py -v
         working-directory: backend
 
 # Deployment itself is handled by Railway's native GitHub integration — it

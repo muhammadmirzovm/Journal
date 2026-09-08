@@ -5,7 +5,7 @@ from .models import Academy, InviteToken, AcademyTelegramGroup
 class AcademySerializer(serializers.ModelSerializer):
     class Meta:
         model  = Academy
-        fields = ('id', 'name', 'slug', 'primary_color', 'report_time', 'weekly_report_time', 'created_at')
+        fields = ('id', 'name', 'slug', 'primary_color', 'report_time', 'weekly_report_time', 'stamp', 'created_at')
         read_only_fields = ('created_at',)
 
 

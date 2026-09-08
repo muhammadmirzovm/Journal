@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
-import { Users, BookOpen, Plus, LogIn, ArrowRight, GraduationCap, X, Loader2, Trophy, Star, MessageCircle, BookMarked, ClipboardList, ScanLine, PiggyBank } from 'lucide-react'
+import { Users, BookOpen, Plus, LogIn, ArrowRight, GraduationCap, X, Loader2, Trophy, Star, MessageCircle, BookMarked, ClipboardList, ScanLine, PiggyBank, Wallet } from 'lucide-react'
 import { getGroups, joinGroup, getAcademyAnnouncements, createAcademyAnnouncement, deleteAnnouncement } from '../api/groups'
 import { getAdminStats, connectTelegram } from '../api/users'
 import { AnnouncementsSection } from '../components/AnnouncementCard'
@@ -223,6 +223,11 @@ export default function Dashboard() {
                 to: '/coins/report', icon: PiggyBank,
                 label: t('nav.coin_report'), desc: t('dashboard.quick_coin_report_desc'),
                 color: '#DC2626', grad: 'linear-gradient(135deg, #DC262622, #DC262608)', border: '#DC262633', glow: '#DC2626',
+              },
+              {
+                to: '/payments', icon: Wallet,
+                label: t('nav.payments'), desc: t('dashboard.quick_payments_desc'),
+                color: '#16A34A', grad: 'linear-gradient(135deg, #16A34A22, #16A34A08)', border: '#16A34A33', glow: '#16A34A',
               },
             ].map(({ to, icon: Icon, label, desc, color, grad, border, glow }) => (
               <Link key={to} to={to} style={{ textDecoration: 'none' }}>

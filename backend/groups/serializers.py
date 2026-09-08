@@ -41,13 +41,14 @@ class GroupSerializer(serializers.ModelSerializer):
     teacher_name = serializers.SerializerMethodField()
     member_count = serializers.SerializerMethodField()
     is_member    = serializers.SerializerMethodField()
+    tuition      = serializers.SerializerMethodField()
 
     class Meta:
         model  = Group
         fields = ('id', 'name', 'description', 'join_key', 'teacher', 'teacher_name',
                   'member_count', 'is_member', 'class_days', 'class_time',
                   'telegram_chat_id', 'language', 'is_individual', 'is_graduated', 'exam_ready',
-                  'exam_ready_at', 'exam_ready_note', 'created_at')
+                  'exam_ready_at', 'exam_ready_note', 'created_at', 'tuition')
         read_only_fields = ('join_key', 'teacher')
 
     def get_teacher_name(self, obj):
@@ -61,6 +62,18 @@ class GroupSerializer(serializers.ModelSerializer):
         if request and request.user.is_authenticated:
             return obj.memberships.filter(student=request.user).exists()
         return False
+
+    def get_tuition(self, obj):
+        # Which payments.TuitionTemplate (if any) this group is priced with —
+        # lives in the payments app so groups' own schema stays untouched.
+        tuition = getattr(obj, 'tuition', None)
+        if not tuition:
+            return None
+        return {
+            'template': tuition.template_id,
+            'template_name': tuition.template.name,
+            'default_price': tuition.template.default_price,
+        }
 
 
 class LessonSerializer(serializers.ModelSerializer):

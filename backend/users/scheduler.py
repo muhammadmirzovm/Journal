@@ -25,6 +25,19 @@ def _run_daily(academy_id):
         close_old_connections()
 
 
+def _run_payment_reminders(academy_id):
+    close_old_connections()
+    from academies.models import Academy
+    from payments.management.commands.send_payment_reminders import run_payment_reminders_for_academy
+    try:
+        academy = Academy.objects.get(id=academy_id)
+        run_payment_reminders_for_academy(academy)
+    except Exception as exc:
+        logger.error('Payment reminders failed for academy %s: %s', academy_id, exc)
+    finally:
+        close_old_connections()
+
+
 def _run_weekly(academy_id):
     close_old_connections()
     from academies.models import Academy
@@ -59,6 +72,19 @@ def reschedule(academy):
             args=[academy.id],
         )
         logger.info('Scheduled daily report for academy %s at %s UTC', academy.name, academy.report_time)
+
+    # Payment debt reminders — reuses report_time, no separate config needed
+    reminders_id = f'payment_reminders_{academy.id}'
+    if _scheduler.get_job(reminders_id):
+        _scheduler.remove_job(reminders_id)
+    if academy.report_time:
+        _scheduler.add_job(
+            _run_payment_reminders,
+            CronTrigger(hour=academy.report_time.hour, minute=academy.report_time.minute, timezone='UTC'),
+            id=reminders_id,
+            args=[academy.id],
+        )
+        logger.info('Scheduled payment reminders for academy %s at %s UTC', academy.name, academy.report_time)
 
     # Weekly parent report — runs every Sunday
     weekly_id = f'weekly_report_{academy.id}'

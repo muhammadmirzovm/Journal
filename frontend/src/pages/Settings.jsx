@@ -6,7 +6,7 @@ import {
   Building2, Link2, Plus, Copy, Check, Trash2,
   Loader2, Users, GraduationCap,
   Clock, Hash, Shield, Sparkles, AlertCircle, UserX, Send,
-  ChevronLeft, ChevronRight, ChevronDown, Search, X,
+  ChevronLeft, ChevronRight, ChevronDown, Search, X, Stamp,
 } from 'lucide-react'
 import api from '../api/axios'
 import { useAuth } from '../context/AuthContext'
@@ -204,6 +204,15 @@ function AcademyTab({ academy, onUpdated }) {
   const [form, setForm]       = useState({ name: academy.name, primary_color: academy.primary_color, report_time: utcToUzt(academy.report_time), weekly_report_time: utcToUzt(academy.weekly_report_time) })
   const [loading, setLoading] = useState(false)
   const [saved, setSaved]     = useState(false)
+  const [stampFile, setStampFile]       = useState(null)
+  const [stampPreview, setStampPreview] = useState(academy.stamp || '')
+
+  const handleStampChange = e => {
+    const file = e.target.files[0]
+    if (!file) return
+    setStampFile(file)
+    setStampPreview(URL.createObjectURL(file))
+  }
 
   const [tgGroups, setTgGroups]       = useState([])
   const [tgForm, setTgForm]           = useState({ chat_id: '', name: '', language: 'uz' })
@@ -241,9 +250,24 @@ function AcademyTab({ academy, onUpdated }) {
     e.preventDefault()
     setLoading(true)
     try {
-      const payload = { ...form, report_time: uztToUtc(form.report_time) || null, weekly_report_time: uztToUtc(form.weekly_report_time) || null }
-      const { data } = await api.patch('/academy/', payload)
+      const reportTime = uztToUtc(form.report_time) || ''
+      const weeklyTime = uztToUtc(form.weekly_report_time) || ''
+      let data
+      if (stampFile) {
+        const fd = new FormData()
+        fd.append('name', form.name)
+        fd.append('primary_color', form.primary_color)
+        fd.append('report_time', reportTime)
+        fd.append('weekly_report_time', weeklyTime)
+        fd.append('stamp', stampFile)
+        ;({ data } = await api.patch('/academy/', fd))
+      } else {
+        const payload = { ...form, report_time: reportTime || null, weekly_report_time: weeklyTime || null }
+        ;({ data } = await api.patch('/academy/', payload))
+      }
       onUpdated(data)
+      setStampFile(null)
+      setStampPreview(data.stamp || '')
       setSaved(true)
       setTimeout(() => setSaved(false), 2000)
     } catch {
@@ -300,6 +324,27 @@ function AcademyTab({ academy, onUpdated }) {
           <div>
             <p style={{ fontSize: 13, fontWeight: 700, color: form.primary_color }}>{form.name || t('settings.academy_name')}</p>
             <p style={{ fontSize: 11, color: 'var(--text-muted)' }}>{t('settings.invite_preview')}</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Stamp / seal */}
+      <div>
+        <label style={labelStyle}>
+          <Stamp size={11} style={{ display: 'inline', verticalAlign: 'middle', marginRight: 4 }} />
+          {t('payments.stamp_label')}
+        </label>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          {stampPreview ? (
+            <img src={stampPreview} alt="" style={{ width: 52, height: 52, borderRadius: 8, objectFit: 'contain', border: '1px solid var(--border)', background: '#fff', flexShrink: 0 }} />
+          ) : (
+            <div style={{ width: 52, height: 52, borderRadius: 8, border: '1px dashed var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <Stamp size={20} color="var(--text-muted)" />
+            </div>
+          )}
+          <div>
+            <input type="file" accept="image/*" onChange={handleStampChange} style={{ fontSize: 13, color: 'var(--text-muted)' }} />
+            <p style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 4 }}>{t('payments.stamp_hint')}</p>
           </div>
         </div>
       </div>

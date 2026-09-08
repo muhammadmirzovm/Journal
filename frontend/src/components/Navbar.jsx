@@ -1,5 +1,5 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom'
-import { Sun, Moon, Menu, X, GraduationCap, LogOut, User, LayoutDashboard, Users, Globe, BookMarked, Settings, Gift, HelpCircle } from 'lucide-react'
+import { Sun, Moon, Menu, X, GraduationCap, LogOut, User, LayoutDashboard, Users, Globe, BookMarked, Settings, Gift, HelpCircle, Wallet } from 'lucide-react'
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
@@ -52,6 +52,12 @@ export default function Navbar() {
       ? [{ to: '/groups', label: t('nav.groups'), icon: <Users size={15} /> }]
       : []),
     { to: '/rewards', label: t('nav.rewards'), icon: <Gift size={15} /> },
+    ...(user.role === 'admin'
+      ? [{ to: '/payments', label: t('nav.payments'), icon: <Wallet size={15} /> }]
+      : []),
+    ...(user.role === 'student' || user.role === 'parent'
+      ? [{ to: '/my-payments', label: t('nav.my_payments'), icon: <Wallet size={15} /> }]
+      : []),
     ...(user.role === 'admin' || user.role === 'teacher'
       ? [{ to: '/settings', label: t('nav.settings'), icon: <Settings size={15} /> }]
       : []),

@@ -16,6 +16,7 @@ class Academy(models.Model):
     )
     report_time        = models.TimeField(null=True, blank=True, help_text='Daily report time in UTC (e.g. 15:00)')
     weekly_report_time = models.TimeField(null=True, blank=True, help_text='Weekly parent report time in UTC (sent every Sunday)')
+    stamp              = models.ImageField(upload_to='academy_stamps/', blank=True, null=True, help_text="To'lov kvitansiyalarida ko'rinadigan muhr/pechat rasmi")
     created_at  = models.DateTimeField(auto_now_add=True)
 
     class Meta:

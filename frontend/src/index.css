@@ -111,6 +111,7 @@ a { transition: color 0.15s, opacity 0.15s; }
 /* ── Mobile ─────────────────────────────────── */
 @media (max-width: 640px) {
   .hide-mobile  { display: none !important; }
+  .mobile-only  { display: flex !important; }
   .stack-mobile { flex-direction: column !important; }
   .full-mobile  { width: 100% !important; }
 
