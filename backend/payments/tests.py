@@ -422,7 +422,7 @@ def test_receipt_download_forbidden_for_other_student(group, student, membership
 @pytest.mark.django_db
 def test_receipt_visible_to_linked_parent_but_not_unrelated_parent(group, student, membership, admin_user, academy):
     from users.models import ParentStudent
-    payment = Payment.objects.create(student=student, group=group, amount=100000, method=Payment.Method.CASH, receipt_code='PARENT1', recorded_by=admin_user)
+    payment = Payment.objects.create(student=student, group=group, amount=100000, method=Payment.Method.CASH, receipt_code='PARNT1', recorded_by=admin_user)
 
     linked_parent = User.objects.create_user(username='pay_parent', password='pass1234', role='parent', academy=academy)
     ParentStudent.objects.create(parent=linked_parent, student=student)
